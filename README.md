@@ -1,96 +1,88 @@
 # טהרת המשפחה - PWA
 
-אפליקציית מעקב טהרת המשפחה בעברית עם ניתוח כתמים בעזרת AI.
+אפליקציה למעקב הלכות נידה וטהרת המשפחה: וסת החודש, עונה בינונית, וסת ההפלגה, הפסק טהרה, שבעה נקיים, וטבילה. כולל בודק כתמים מבוסס AI עם תמונה, התחברות חשבון וסנכרון, וחיבור זוגי.
 
-## תכולה
+## תכונות
 
-- **PWA** - מבוסס HTML/JS, נפתח בפלאפון ופועל אופליין
-- **חישובים הלכתיים** - וסת החודש, עונה בינונית, וסת ההפלגה
-- **מעקב מחזור** - מהפסק טהרה דרך שבעה נקיים ועד טבילה
-- **AI לכתמים** - העלאת תמונה → ניתוח ויזואלי → רמת חשש
-- **פרטיות** - הכל ב-localStorage, התמונות לא נשמרות בשרת
+- **מעקב מחזורים** עם תאריכי פרישה צפויים (וסת החודש, עונה בינונית, הפלגה)
+- **ספירת שבעה נקיים** ויזואלית
+- **בודק כתמים** - ניתוח רגיל + ניתוח AI על תמונה (Claude Vision)
+- **התחברות** - אימייל+סיסמה או Google OAuth
+- **חיבור זוגי** - האישה מזמינה את הבעל בקוד 6 ספרות, הבעל רואה תאריכי פרישה (לא בדיקות אישיות אלא אם האישה אישרה)
+- **PWA** - עובד אופליין, ניתן להוסיף למסך הבית
+- **מצב מקומי** - אפשרות להשתמש בלי חשבון, נתונים נשמרים רק במכשיר
 
-## מבנה
+## פריסה
+
+### 1. יצירת מסד הנתונים D1
+
+ב-Cloudflare Dashboard:
+1. **Workers & Pages** → **D1**
+2. **Create database** → שם: `taharah-db`
+3. אחרי היצירה, פתחי את הטאב **Console**
+4. הדביקי את התוכן של `migrations/0001_init.sql` והריצי
+
+### 2. חיבור ה-DB לפרויקט Pages
+
+1. **Workers & Pages** → הפרויקט `taharah` → **Settings**
+2. **Functions** → **D1 database bindings** → **Add binding**:
+   - Variable name: `DB`
+   - D1 database: `taharah-db`
+3. שמירה ופריסה מחדש
+
+### 3. משתני סביבה (Secrets)
+
+**Settings** → **Environment variables** → **Production** + **Preview**:
+
+| שם | ערך | חובה? |
+|---|---|---|
+| `ANTHROPIC_API_KEY` | sk-ant-... | כן (לזיהוי תמונות) |
+| `GOOGLE_CLIENT_ID` | (אופציונלי) | רק אם רוצים Google login |
+| `GOOGLE_CLIENT_SECRET` | (אופציונלי) | רק אם רוצים Google login |
+
+יש לסמן **Encrypt** לכל המפתחות.
+
+### 4. (אופציונלי) הגדרת Google OAuth
+
+1. [Google Cloud Console](https://console.cloud.google.com/) → **APIs & Services** → **Credentials**
+2. **Create Credentials** → **OAuth 2.0 Client ID** → **Web application**
+3. **Authorized redirect URIs**: `https://taharah.pages.dev/api/auth/google/callback`
+4. הוסיפי את Client ID ו-Client Secret ב-CF Pages Secrets
+
+אם לא מוגדר, הכפתור "המשך עם Google" יחזיר שגיאה. אימייל+סיסמה תמיד עובד.
+
+## מבנה הפרויקט
 
 ```
 taharah/
-├── public/                    # סטטי - מתפרס ל-Cloudflare Pages
-│   ├── index.html             # האפליקציה כולה
-│   ├── manifest.json          # PWA manifest
-│   ├── sw.js                  # Service Worker
-│   ├── icon-192.png           # אייקון
-│   ├── icon-512.png           # אייקון גדול
-│   └── _headers               # כותרות אבטחה
-├── functions/api/
-│   └── analyze.js             # Cloudflare Pages Function - פרוקסי ל-Claude API
-├── .github/workflows/
-│   └── deploy.yml             # דיפלוי אוטומטי
-└── README.md
+├── public/
+│   ├── index.html      # האפליקציה
+│   ├── manifest.json
+│   ├── sw.js
+│   └── icon-*.png
+├── functions/
+│   ├── _lib.js                       # auth, hashing, helpers
+│   └── api/
+│       ├── analyze.js               # AI stain analysis
+│       ├── auth/{signup,login,logout,me}.js
+│       ├── auth/google/{start,callback}.js
+│       ├── cycles/{index,[id]}.js
+│       ├── stains/{index,[id]}.js
+│       ├── couple/{invite,accept,index}.js
+│       └── settings.js
+├── migrations/
+│   └── 0001_init.sql
+└── wrangler.toml
 ```
 
-## דיפלוי - שלב אחר שלב
+## שימוש בקוד הזמנה זוגי
 
-### 1. צרי repo חדש ב-GitHub
-- שם: `taharah` (או כל שם אחר)
-- העלי את כל הקבצים מהתיקייה הזו
+**האישה:** הגדרות → "הזמנת בן זוג" → מקבלת קוד בן 6 ספרות (תקף 24 שעות) → שולחת לבעלה.
 
-### 2. צרי פרויקט ב-Cloudflare Pages
-1. היכנסי ל-[Cloudflare Dashboard](https://dash.cloudflare.com)
-2. Workers & Pages → Create → Pages → Connect to Git
-3. בחרי את ה-repo
-4. Build settings:
-   - **Build command:** *(ריק)*
-   - **Build output directory:** `public`
-5. Save and Deploy
+**הבעל:** נרשם באפליקציה → הגדרות → "הצטרפות לבת זוג" → מזין את הקוד.
 
-### 3. הוסיפי את משתנה הסביבה
-ב-CF Pages → Settings → Environment Variables:
-- שם: `ANTHROPIC_API_KEY`
-- ערך: המפתח שלך מ-[console.anthropic.com](https://console.anthropic.com)
-- Production + Preview
+הבעל רואה את תאריכי הפרישה והטבילה (קריאה בלבד). בדיקות כתמים פרטיות כברירת מחדל - האישה יכולה להפעיל שיתוף ידני.
 
-חשוב: בלי המפתח הזה, ניתוח התמונות לא יעבוד (האפליקציה תיפול אוטומטית לחישוב לפי כללים).
+## אזהרה הלכתית
 
-### 4. (אופציונלי) GitHub Actions
-אם את רוצה שכל push יעדכן את האתר אוטומטית:
-
-ב-GitHub repo → Settings → Secrets and variables → Actions:
-- `CLOUDFLARE_API_TOKEN` - תיצרי ב-CF: My Profile → API Tokens → Create Token → "Edit Cloudflare Workers" template
-- `CLOUDFLARE_ACCOUNT_ID` - מופיע ב-CF Dashboard בתפריט הימני
-
-## עלות
-
-- **Cloudflare Pages**: בחינם עד 500 דיפלויים בחודש ו-100K בקשות לפונקציה ביום
-- **Anthropic API**: כ-$0.003 לבדיקת תמונה (תלוי בגודל), חודש ממוצע ~$0.50
-
-## פרטיות
-
-- כל המחזורים, הכתמים וההגדרות נשמרים אך ורק ב-`localStorage` של הדפדפן
-- התמונות נשלחות ישירות ל-Claude API דרך הפרוקסי, לא נשמרות בשום מקום
-- הפונקציה ב-Cloudflare לא מבצעת לוג של תמונות
-- ייצוא/ייבוא נעשה על המכשיר בלבד
-
-## בטיחות הלכתית
-
-האפליקציה היא **כלי עזר ויזואלי בלבד**. כל פסק הלכה למעשה צריך לבוא מרב מורה הוראה. AI לא מחליף שאלת רב.
-
-## פיתוח מקומי
-
-```bash
-# התקנת wrangler
-npm install -g wrangler
-
-# הרצה מקומית
-wrangler pages dev public
-
-# הגדר משתנה סביבה
-echo "ANTHROPIC_API_KEY=sk-ant-..." > .dev.vars
-```
-
-## הוספות אפשריות בעתיד
-
-- [ ] התראות push יום לפני פרישה
-- [ ] שילוב עם זמני שקיעה לפי GPS לזיהוי "עונה" אוטומטי
-- [ ] ייצוא לוח שנה (ICS) של תאריכי פרישה
-- [ ] תמיכה במשתמשת מרובות (סנכרון ענן עם Cloudflare D1)
-- [ ] מצב למורה הוראה (סטטיסטיקות, ייעוץ)
+**האפליקציה היא כלי עזר בלבד**. כל קביעה הלכתית - גם "מתי לפרוש", גם "האם הכתם טמא", וגם "מתי לטבול" - חייבת להיפסק על ידי רב מורה הוראה.

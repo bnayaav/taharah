@@ -2,6 +2,8 @@
 // מקבל תמונה + הקשר, שולח ל-Claude לניתוח, ומחזיר JSON מובנה
 // משתנה סביבה דרוש: ANTHROPIC_API_KEY
 
+import { getUserFromRequest } from '../_lib.js';
+
 export async function onRequestPost(context) {
   const { request, env } = context;
 
@@ -11,6 +13,12 @@ export async function onRequestPost(context) {
     'Access-Control-Allow-Methods': 'POST, OPTIONS',
     'Access-Control-Allow-Headers': 'Content-Type',
   };
+
+  // Require auth - prevents abuse of the API
+  const user = await getUserFromRequest(request, env);
+  if (!user) {
+    return jsonResponse({ error: 'unauthorized' }, 401, corsHeaders);
+  }
 
   if (!env.ANTHROPIC_API_KEY) {
     return jsonResponse({ error: 'API key not configured' }, 500, corsHeaders);
