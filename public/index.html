@@ -50,6 +50,50 @@
   @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
 
   .hero { margin-top: 20px; background: linear-gradient(180deg, var(--surface) 0%, var(--surface-tinted) 100%); border-radius: 24px; padding: 24px 22px; box-shadow: var(--shadow-lg); border: 1px solid var(--line-soft); position: relative; overflow: hidden; }
+
+  /* Calendar */
+  .cal-card { margin-top: 16px; background: var(--surface); border-radius: 22px; padding: 18px 14px 14px; box-shadow: var(--shadow-lg); border: 1px solid var(--line-soft); }
+  .cal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; padding: 0 4px; }
+  .cal-nav-btn { background: var(--bg-warm); border: 0; width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--ink-soft); transition: background .15s; }
+  .cal-nav-btn:active { background: var(--rose-soft); color: var(--wine-deep); }
+  .cal-title { text-align: center; flex: 1; }
+  .cal-month-greg { font-family: var(--serif); font-size: 18px; font-weight: 700; color: var(--ink); letter-spacing: -.01em; }
+  .cal-month-heb { font-family: var(--serif); font-size: 14px; color: var(--ink-soft); margin-top: 2px; }
+  .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin-bottom: 14px; }
+  .cal-dow { text-align: center; padding: 6px 0 4px; font-size: 11px; font-weight: 700; color: var(--ink-muted); letter-spacing: .05em; }
+  .cal-dow.shabbat { color: var(--wine); }
+  .cal-day { aspect-ratio: 1; min-height: 38px; border-radius: 10px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; position: relative; background: transparent; transition: background .15s, transform .1s; padding: 2px; }
+  .cal-day:active { transform: scale(.94); }
+  .cal-day.empty { visibility: hidden; }
+  .cal-day-num { font-family: var(--serif); font-size: 15px; font-weight: 600; color: var(--ink); line-height: 1; }
+  .cal-day-heb { font-family: var(--serif); font-size: 9px; color: var(--ink-muted); margin-top: 1px; line-height: 1; }
+  .cal-day.shabbat .cal-day-num { color: var(--wine-deep); }
+  .cal-day.outside { opacity: .35; }
+  .cal-day.today { background: linear-gradient(135deg, var(--wine), var(--wine-deep)); box-shadow: 0 4px 12px rgba(122,46,58,.3); }
+  .cal-day.today .cal-day-num, .cal-day.today .cal-day-heb { color: #fbf6ee; }
+  .cal-day.niddah { background: var(--rose-soft); }
+  .cal-day.niddah .cal-day-num { color: var(--wine-deep); }
+  .cal-day.clean { background: var(--sky-soft); }
+  .cal-day.clean .cal-day-num { color: #2a4a5a; }
+  .cal-day.perisha { background: var(--gold-soft); }
+  .cal-day.perisha .cal-day-num { color: #6b4f1f; }
+  .cal-day.mikveh { background: linear-gradient(135deg, var(--rose-soft), var(--sage-soft)); border: 2px solid var(--sage); }
+  .cal-day.mikveh .cal-day-num { color: var(--wine-deep); }
+  .cal-day.today.niddah, .cal-day.today.clean, .cal-day.today.perisha, .cal-day.today.mikveh { background: linear-gradient(135deg, var(--wine), var(--wine-deep)); border: 0; }
+  .cal-day-dots { position: absolute; bottom: 3px; left: 50%; transform: translateX(-50%); display: flex; gap: 2px; }
+  .cal-day-dots span { width: 4px; height: 4px; border-radius: 50%; }
+  .cal-legend { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px 14px; padding: 12px 8px 4px; border-top: 1px solid var(--line-soft); margin-top: 6px; }
+  .legend-row { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--ink-soft); font-weight: 500; }
+  .legend-dot { width: 12px; height: 12px; border-radius: 4px; }
+  .legend-dot.legend-niddah { background: var(--rose-soft); border: 1px solid var(--rose); }
+  .legend-dot.legend-clean { background: var(--sky-soft); border: 1px solid var(--sky); }
+  .legend-dot.legend-perisha { background: var(--gold-soft); border: 1px solid var(--gold); }
+  .legend-dot.legend-mikveh { background: linear-gradient(135deg, var(--rose-soft), var(--sage-soft)); border: 1px solid var(--sage); }
+  .btn-today { background: var(--bg-warm); border: 1px solid var(--line); padding: 6px 16px; border-radius: 100px; font-family: var(--sans); font-size: 12px; font-weight: 600; color: var(--ink-soft); cursor: pointer; }
+  .btn-today:active { background: var(--rose-soft); color: var(--wine-deep); }
+  .cal-day-details-card { margin-top: 14px; padding: 14px; background: var(--bg-warm); border-radius: 14px; border: 1px solid var(--line-soft); animation: fadeIn .2s; }
+  .cal-day-details-row { display: flex; align-items: flex-start; gap: 8px; margin-top: 6px; font-size: 13px; color: var(--ink-soft); }
+  .cal-day-details-row strong { color: var(--ink); font-weight: 600; }
   .hero::before { content: ''; position: absolute; top: -40px; left: -40px; width: 120px; height: 120px; background: radial-gradient(circle, var(--rose-soft) 0%, transparent 70%); opacity: .6; pointer-events: none; }
   .today-row { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 18px; position: relative; }
   .today-greg { font-size: 13px; color: var(--ink-muted); font-weight: 500; }
@@ -359,6 +403,44 @@
   <!-- HOME -->
   <div class="view active" id="view-home">
     <div class="hero" id="hero"></div>
+
+    <!-- Calendar -->
+    <div class="cal-card">
+      <div class="cal-header">
+        <button class="cal-nav-btn" onclick="calNav(-1)" aria-label="חודש קודם">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+        </button>
+        <div class="cal-title">
+          <div class="cal-month-greg" id="cal-month-greg">—</div>
+          <div class="cal-month-heb" id="cal-month-heb">—</div>
+        </div>
+        <button class="cal-nav-btn" onclick="calNav(1)" aria-label="חודש הבא">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+        </button>
+      </div>
+
+      <div class="cal-grid">
+        <div class="cal-dow">א'</div>
+        <div class="cal-dow">ב'</div>
+        <div class="cal-dow">ג'</div>
+        <div class="cal-dow">ד'</div>
+        <div class="cal-dow">ה'</div>
+        <div class="cal-dow">ו'</div>
+        <div class="cal-dow shabbat">ש'</div>
+        <div id="cal-days-container" style="display: contents"></div>
+      </div>
+
+      <div class="cal-legend">
+        <div class="legend-row"><span class="legend-dot legend-niddah"></span><span>מחזור</span></div>
+        <div class="legend-row"><span class="legend-dot legend-perisha"></span><span>פרישה צפויה</span></div>
+        <div class="legend-row"><span class="legend-dot legend-clean"></span><span>שבעת הנקיים</span></div>
+        <div class="legend-row"><span class="legend-dot legend-mikveh"></span><span>טבילה</span></div>
+      </div>
+
+      <div style="text-align: center; margin-top: 12px"><button class="btn-today" onclick="calToday()">חזרה להיום</button></div>
+      <div id="cal-day-details"></div>
+    </div>
+
     <div class="section-title">תאריכים צפויים למחזור הבא</div>
     <div id="predicted" class="pred-grid"></div>
     <div class="btn-row" id="add-cycle-row">
@@ -534,6 +616,9 @@ let isPartner = false;
 let isAdminUser = false;
 let subscription = null;
 let pendingImage = null;
+let calViewYear = null;  // currently displayed calendar month
+let calViewMonth = null; // 0-11
+let calSelectedDate = null;
 let data = { cycles: [], stains: [], settings: { fullDay: false, orLe: false, notifications: false } };
 let authMode = 'login';
 
@@ -662,6 +747,7 @@ function showMainApp() {
   document.body.classList.remove('no-tabbar');
   updateModeBadge();
   renderHero();
+  renderCalendar();
   renderPredictions();
   renderStainForm();
 }
@@ -842,6 +928,187 @@ function renderHero() {
   }
   acs.innerHTML = html;
 }
+
+// =========== Calendar ===========
+const HEB_MONTHS_GREG = ['ינואר','פברואר','מרץ','אפריל','מאי','יוני','יולי','אוגוסט','ספטמבר','אוקטובר','נובמבר','דצמבר'];
+
+function buildDayEvents() {
+  // Returns map: 'YYYY-MM-DD' -> { types: Set, info: [] }
+  const events = {};
+  const add = (dateStr, type, label) => {
+    if (!events[dateStr]) events[dateStr] = { types: new Set(), info: [] };
+    events[dateStr].types.add(type);
+    if (label) events[dateStr].info.push({ type, label });
+  };
+
+  // Process all cycles
+  for (const cycle of data.cycles) {
+    if (!cycle.startDate) continue;
+    const start = parseYmd(cycle.startDate);
+
+    if (cycle.hefsekDate) {
+      // Niddah days: from start until day before hefsek
+      const hefsek = parseYmd(cycle.hefsekDate);
+      let d = new Date(start);
+      while (d < hefsek) {
+        add(ymd(d), 'niddah', 'יום מחזור');
+        d = addDays(d, 1);
+      }
+      // Hefsek day itself
+      add(cycle.hefsekDate, 'niddah', 'הפסק טהרה');
+      // 7 clean days
+      for (let i = 1; i <= 7; i++) {
+        const cleanDay = addDays(hefsek, i);
+        add(ymd(cleanDay), 'clean', `יום ${gematriya(i)} משבעת הנקיים`);
+      }
+      // Mikveh
+      const mikvehDay = cycle.mikvehDate || ymd(addDays(hefsek, 8));
+      add(mikvehDay, 'mikveh', 'טבילה');
+    } else {
+      // No hefsek yet - mark known niddah days (first 5 at minimum)
+      for (let i = 0; i < 5; i++) {
+        add(ymd(addDays(start, i)), 'niddah', 'יום מחזור');
+      }
+    }
+  }
+
+  // Predicted perisha dates from last cycle
+  const last = getLastCycle();
+  if (last) {
+    const preds = calcPredictions(last);
+    for (const p of preds) {
+      add(ymd(p.date), 'perisha', p.name);
+      if (data.settings.orLe) {
+        add(ymd(addDays(p.date, -1)), 'perisha', `אור ל${p.name}`);
+      }
+    }
+  }
+
+  return events;
+}
+
+function renderCalendar() {
+  const container = document.getElementById('cal-days-container');
+  if (!container) return;
+
+  const today = new Date();
+  if (calViewYear === null) { calViewYear = today.getFullYear(); calViewMonth = today.getMonth(); }
+
+  // Update header
+  document.getElementById('cal-month-greg').textContent = `${HEB_MONTHS_GREG[calViewMonth]} ${calViewYear}`;
+  // Hebrew month - get from middle of the month for accuracy
+  const midMonth = new Date(calViewYear, calViewMonth, 15);
+  const hd = new HDate(midMonth);
+  const startHd = new HDate(new Date(calViewYear, calViewMonth, 1));
+  const endHd = new HDate(new Date(calViewYear, calViewMonth + 1, 0));
+  let hebMonthLabel;
+  if (startHd.getMonthName('h') === endHd.getMonthName('h')) {
+    hebMonthLabel = `${startHd.getMonthName('h')} ${gematriya(startHd.getFullYear() % 1000)}`;
+  } else {
+    hebMonthLabel = `${startHd.getMonthName('h')}–${endHd.getMonthName('h')} ${gematriya(endHd.getFullYear() % 1000)}`;
+  }
+  document.getElementById('cal-month-heb').textContent = hebMonthLabel;
+
+  const events = buildDayEvents();
+  const firstOfMonth = new Date(calViewYear, calViewMonth, 1);
+  const startDayOfWeek = firstOfMonth.getDay(); // 0 = Sunday
+  const daysInMonth = new Date(calViewYear, calViewMonth + 1, 0).getDate();
+  const todayStr_ = todayStr();
+
+  let html = '';
+  // Empty cells before month starts
+  for (let i = 0; i < startDayOfWeek; i++) {
+    html += '<div class="cal-day empty"></div>';
+  }
+  // Days of month
+  for (let day = 1; day <= daysInMonth; day++) {
+    const date = new Date(calViewYear, calViewMonth, day);
+    const dateStr = ymd(date);
+    const dow = date.getDay();
+    const dayHd = new HDate(date);
+    const hebDay = gematriya(dayHd.getDate());
+
+    const ev = events[dateStr];
+    const classes = ['cal-day'];
+    if (dow === 6) classes.push('shabbat');
+    if (dateStr === todayStr_) classes.push('today');
+    if (ev) {
+      // Priority: mikveh > perisha > niddah > clean
+      if (ev.types.has('mikveh')) classes.push('mikveh');
+      else if (ev.types.has('niddah')) classes.push('niddah');
+      else if (ev.types.has('perisha')) classes.push('perisha');
+      else if (ev.types.has('clean')) classes.push('clean');
+    }
+
+    html += `<div class="${classes.join(' ')}" data-date="${dateStr}" onclick="calSelectDay('${dateStr}')">
+      <div class="cal-day-num">${day}</div>
+      <div class="cal-day-heb">${hebDay}</div>
+    </div>`;
+  }
+
+  container.innerHTML = html;
+
+  // Re-render details if a day is selected and still in this month
+  if (calSelectedDate) {
+    const sd = parseYmd(calSelectedDate);
+    if (sd.getFullYear() === calViewYear && sd.getMonth() === calViewMonth) {
+      renderCalDayDetails(calSelectedDate);
+    } else {
+      document.getElementById('cal-day-details').innerHTML = '';
+    }
+  }
+}
+
+function renderCalDayDetails(dateStr) {
+  const detailsEl = document.getElementById('cal-day-details');
+  if (!detailsEl) return;
+  const events = buildDayEvents();
+  const ev = events[dateStr];
+  const date = parseYmd(dateStr);
+  const hebStr = fmtHeb(date);
+  const gregStr = fmtGreg(date);
+
+  let body = '';
+  if (ev && ev.info.length > 0) {
+    // Deduplicate labels
+    const seen = new Set();
+    const uniqueInfo = ev.info.filter(i => {
+      if (seen.has(i.label)) return false;
+      seen.add(i.label);
+      return true;
+    });
+    body = uniqueInfo.map(i => `<div class="cal-day-details-row"><strong>${i.label}</strong></div>`).join('');
+  } else {
+    body = '<div class="muted small">אין אירועים ביום זה.</div>';
+  }
+
+  detailsEl.innerHTML = `<div class="cal-day-details-card">
+    <div style="font-family: var(--serif); font-size: 17px; font-weight: 600; color: var(--ink)">${hebStr}</div>
+    <div class="muted small">${gregStr}</div>
+    <div style="margin-top: 8px">${body}</div>
+  </div>`;
+}
+
+window.calSelectDay = function(dateStr) {
+  calSelectedDate = dateStr;
+  renderCalDayDetails(dateStr);
+};
+
+window.calNav = function(delta) {
+  if (calViewYear === null) { const t = new Date(); calViewYear = t.getFullYear(); calViewMonth = t.getMonth(); }
+  calViewMonth += delta;
+  if (calViewMonth < 0) { calViewMonth = 11; calViewYear--; }
+  else if (calViewMonth > 11) { calViewMonth = 0; calViewYear++; }
+  renderCalendar();
+};
+
+window.calToday = function() {
+  const t = new Date();
+  calViewYear = t.getFullYear();
+  calViewMonth = t.getMonth();
+  calSelectedDate = todayStr();
+  renderCalendar();
+};
 
 function renderPredictions() {
   const last = getLastCycle();
@@ -1120,7 +1387,7 @@ window.showView = function(name) {
   document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
   document.getElementById('view-' + name)?.classList.add('active');
   document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.view === name));
-  if (name === 'home') { renderHero(); renderPredictions(); }
+  if (name === 'home') { renderHero(); renderCalendar(); renderPredictions(); }
   if (name === 'history') renderHistory();
   if (name === 'stains') { renderStainForm(); renderStains(); }
   if (name === 'info') renderAskStatus();
@@ -1155,7 +1422,7 @@ window.saveCycle = async function() {
     }
     closeModal('modal-cycle');
     showToast('המחזור נשמר');
-    renderHero(); renderPredictions();
+    renderHero(); renderCalendar(); renderPredictions();
   } catch (e) { showToast(e.message); }
 };
 
@@ -1173,7 +1440,7 @@ window.saveHefsek = async function() {
     saveLocal();
     closeModal('modal-hefsek');
     showToast('הפסק טהרה נשמר');
-    renderHero();
+    renderHero(); renderCalendar();
   } catch (e) { showToast(e.message); }
 };
 
@@ -1188,7 +1455,7 @@ window.markMikveh = async function() {
     cycle.mikvehDate = todayStr();
     saveLocal();
     showToast('סומנה הטבילה. שתעלה בשורות טובות.');
-    renderHero();
+    renderHero(); renderCalendar();
   } catch (e) { showToast(e.message); }
 };
 
@@ -1199,6 +1466,7 @@ window.deleteCycle = async function(id) {
     data.cycles = data.cycles.filter(c => c.id !== id);
     saveLocal();
     renderHistory();
+    renderHero(); renderCalendar(); renderPredictions();
   } catch (e) { showToast(e.message); }
 };
 
@@ -1217,7 +1485,7 @@ window.toggleSetting = async function(key) {
     if (mode === 'cloud') await api('PATCH', '/api/settings', { [key]: data.settings[key] });
     saveLocal();
     renderSettings();
-    if (data.cycles.length > 0) renderHero();
+    if (data.cycles.length > 0) { renderHero(); renderCalendar(); }
   } catch (e) { showToast(e.message); data.settings[key] = !data.settings[key]; }
 };
 
@@ -1370,7 +1638,7 @@ window.acceptInvite = async function() {
     showToast('התחברתם בהצלחה');
     await loadFromCloud();
     updateModeBadge();
-    renderHero(); renderPredictions(); renderSettings();
+    renderHero(); renderCalendar(); renderPredictions(); renderSettings();
   } catch (e) { showToast(e.message); }
 };
 
@@ -1393,7 +1661,7 @@ window.unlinkCouple = async function() {
     showToast('החיבור נותק');
     await loadFromCloud();
     updateModeBadge();
-    renderHero(); renderPredictions(); renderSettings();
+    renderHero(); renderCalendar(); renderPredictions(); renderSettings();
   } catch (e) { showToast(e.message); }
 };
 
@@ -1619,7 +1887,7 @@ window.clearAllData = function() {
   localStorage.removeItem(STORAGE_KEY);
   data = loadLocal();
   showToast('כל הנתונים נמחקו');
-  renderHero(); renderPredictions(); renderSettings();
+  renderHero(); renderCalendar(); renderPredictions(); renderSettings();
 };
 
 function showToast(msg) {
