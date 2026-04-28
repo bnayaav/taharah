@@ -1424,7 +1424,7 @@ window.showUpgradeScreen = async function() {
     const info = res.paymentInfo;
     let methodsHtml = '';
     if (info.bitPhone) methodsHtml += `<div class="payment-method"><div class="payment-icon" style="background:#0099ff">B</div><div class="payment-details"><div class="payment-name">Bit</div><div class="payment-value">${info.bitPhone}</div></div><button class="btn btn-secondary" onclick="copyText('${info.bitPhone}')">העתקה</button></div>`;
-    if (info.payboxLink) methodsHtml += `<div class="payment-method"><div class="payment-icon" style="background:#ee2266">P</div><div class="payment-details"><div class="payment-name">PayBox</div><div class="payment-value">${escapeHtml(info.payboxLink.replace(/^https?:\\/\\//, ''))}</div></div><a class="btn btn-secondary" href="${info.payboxLink}" target="_blank" rel="noopener">פתיחה</a></div>`;
+    if (info.payboxLink) methodsHtml += `<div class="payment-method"><div class="payment-icon" style="background:#ee2266">P</div><div class="payment-details"><div class="payment-name">PayBox</div><div class="payment-value">${escapeHtml(info.payboxLink.replace(/^https?:\/\/, ''))}</div></div><a class="btn btn-secondary" href="${info.payboxLink}" target="_blank" rel="noopener">פתיחה</a></div>`;
     if (info.paypalEmail) methodsHtml += `<div class="payment-method"><div class="payment-icon" style="background:#003087">P</div><div class="payment-details"><div class="payment-name">PayPal</div><div class="payment-value">${info.paypalEmail}</div></div><button class="btn btn-secondary" onclick="copyText('${info.paypalEmail}')">העתקה</button></div>`;
 
     let contactHtml = '';
