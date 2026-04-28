@@ -30,8 +30,8 @@
     --sans: 'Assistant', system-ui, sans-serif;
   }
   * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-  html { overflow-x: hidden; }
-  body { margin: 0; padding: 0; background: var(--bg); color: var(--ink); font-family: var(--sans); font-size: 16px; line-height: 1.55; min-height: 100vh; overscroll-behavior-y: contain; }
+  html, body { margin: 0; padding: 0; background: var(--bg); color: var(--ink); font-family: var(--sans); font-size: 16px; line-height: 1.55; min-height: 100vh; }
+  body { max-width: 100vw; overflow-x: clip; -webkit-overflow-scrolling: touch; }
   body { background-image: radial-gradient(circle at 20% 10%, rgba(192,138,145,.08), transparent 40%), radial-gradient(circle at 80% 90%, rgba(184,137,58,.06), transparent 50%); background-attachment: fixed; padding-bottom: 90px; }
   body.no-tabbar { padding-bottom: 0; }
 
