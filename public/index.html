@@ -622,6 +622,19 @@ async function init() {
 
 async function loadFromCloud() {
   try {
+    // Always refresh user state including isAdmin and subscription
+    const meRes = await fetch('/api/auth/me', { credentials: 'include' });
+    if (meRes.ok) {
+      const meJson = await meRes.json();
+      if (meJson.user) {
+        user = meJson.user;
+        couple = meJson.couple;
+        isPartner = meJson.couple?.role === 'partner';
+        subscription = meJson.subscription;
+        isAdminUser = !!meJson.isAdmin;
+      }
+    }
+
     const [cyclesRes, stainsRes, settingsRes] = await Promise.all([
       api('GET', '/api/cycles'),
       api('GET', '/api/stains'),
@@ -1577,7 +1590,7 @@ window.goToAuth = function() {
 window.logout = async function() {
   if (!confirm('להתנתק?')) return;
   try { await api('POST', '/api/auth/logout'); } catch {}
-  user = null; couple = null; isPartner = false;
+  user = null; couple = null; isPartner = false; isAdminUser = false; subscription = null;
   mode = 'unknown';
   localStorage.removeItem(MODE_KEY);
   data = { cycles: [], stains: [], settings: { fullDay: false, orLe: false, notifications: false } };
