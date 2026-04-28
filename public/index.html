@@ -2,7 +2,7 @@
 <html lang="he" dir="rtl">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <meta name="theme-color" content="#7a2e3a" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="default" />
@@ -30,7 +30,8 @@
     --sans: 'Assistant', system-ui, sans-serif;
   }
   * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-  html, body { margin: 0; padding: 0; background: var(--bg); color: var(--ink); font-family: var(--sans); font-size: 16px; line-height: 1.55; min-height: 100vh; overscroll-behavior-y: contain; overflow-x: hidden; }
+  html { overflow-x: hidden; }
+  body { margin: 0; padding: 0; background: var(--bg); color: var(--ink); font-family: var(--sans); font-size: 16px; line-height: 1.55; min-height: 100vh; overscroll-behavior-y: contain; }
   body { background-image: radial-gradient(circle at 20% 10%, rgba(192,138,145,.08), transparent 40%), radial-gradient(circle at 80% 90%, rgba(184,137,58,.06), transparent 50%); background-attachment: fixed; padding-bottom: 90px; }
   body.no-tabbar { padding-bottom: 0; }
 
@@ -927,8 +928,15 @@ function renderHero() {
   let html = '';
   if (!last.hefsekDate) {
     const daysSinceStart = diffDays(parseYmd(last.startDate), parseYmd(todayStr()));
+    const day = daysSinceStart + 1; // 1-indexed
     if (daysSinceStart >= 4) {
+      // Day 5+: ready for hefsek
       html += `<div class="card" style="margin-top: 18px"><div style="font-family: var(--serif); font-size: 17px; font-weight: 600; margin-bottom: 6px">הפסק טהרה</div><div class="muted small" style="margin-bottom: 12px">אחרי שפסקה הראיה, יש לעשות הפסק טהרה סמוך לשקיעה.</div><button class="btn btn-primary btn-block" onclick="window.openHefsekModal()">סימון הפסק טהרה</button></div>`;
+    } else {
+      // Days 1-4: show countdown
+      const daysUntilHefsek = 5 - day;
+      const dayPlural = daysUntilHefsek === 1 ? 'יום' : 'ימים';
+      html += `<div class="card" style="margin-top: 18px"><div style="font-family: var(--serif); font-size: 17px; font-weight: 600; margin-bottom: 6px">יום ${gematriya(day)} למחזור</div><div class="muted small" style="margin-bottom: 12px">${daysUntilHefsek === 0 ? 'מחר ניתן לעשות הפסק טהרה (אם פסקה הראיה).' : `ניתן לעשות הפסק טהרה בעוד ${daysUntilHefsek} ${dayPlural} (לאחר חמישה ימי ראיה).`}</div><button class="btn btn-secondary btn-block" onclick="window.openHefsekModal()">סימון הפסק טהרה (מתי שתרצה)</button></div>`;
     }
   } else if (!last.mikvehDate) {
     const cleanDay = diffDays(parseYmd(last.hefsekDate), parseYmd(todayStr()));
@@ -974,12 +982,23 @@ function buildDayEvents() {
       }
       // Mikveh
       const mikvehDay = cycle.mikvehDate || ymd(addDays(hefsek, 8));
-      add(mikvehDay, 'mikveh', 'טבילה');
+      add(mikvehDay, 'mikveh', cycle.mikvehDate ? 'טבילה' : 'טבילה צפויה');
     } else {
-      // No hefsek yet - mark known niddah days (first 5 at minimum)
+      // No hefsek yet - show 5 niddah + predicted hefsek/clean/mikveh
+      const today = parseYmd(todayStr());
+      // 5 niddah days
       for (let i = 0; i < 5; i++) {
-        add(ymd(addDays(start, i)), 'niddah', 'יום מחזור');
+        add(ymd(addDays(start, i)), 'niddah', i === 0 ? 'תחילת מחזור' : 'יום מחזור');
       }
+      // Predicted: hefsek on day 5 (earliest possible)
+      const predictedHefsek = addDays(start, 5);
+      add(ymd(predictedHefsek), 'niddah', 'הפסק טהרה צפוי');
+      // 7 predicted clean days
+      for (let i = 1; i <= 7; i++) {
+        add(ymd(addDays(predictedHefsek, i)), 'clean', `יום ${gematriya(i)} משבעת הנקיים (צפוי)`);
+      }
+      // Predicted mikveh
+      add(ymd(addDays(predictedHefsek, 8)), 'mikveh', 'טבילה צפויה');
     }
   }
 
