@@ -2,7 +2,7 @@
 // Sends the book PDFs + user question to Claude API
 // Uses prompt caching so follow-up questions are cheap
 
-import { getUserFromRequest, getSubscription, incrementQuestionsUsed, FREE_QUESTIONS_LIMIT, SUBSCRIPTION_PRICE_NIS } from '../_lib.js';
+import { getUserFromRequest, getSubscription, incrementQuestionsUsed, isAdmin, FREE_QUESTIONS_LIMIT, SUBSCRIPTION_PRICE_NIS } from '../_lib.js';
 
 const SYSTEM_PROMPT = `אתה עוזר הלכתי המתמחה בהלכות נדה וטהרת המשפחה. אתה עונה אך ורק בהתבסס על הספר "דרכי טהרה" של הראשון לציון הרב מרדכי אליהו זצ"ל, המצורף.
 
@@ -44,9 +44,10 @@ export async function onRequestPost({ request, env }) {
     return new Response(JSON.stringify({ error: 'API key not configured' }), { status: 500, headers: corsHeaders });
   }
 
-  // Check subscription / free quota
+  // Check subscription / free quota (admins are exempt)
+  const adminUser = isAdmin(user, env);
   const sub = await getSubscription(env, user.id);
-  if (!sub.canAsk) {
+  if (!adminUser && !sub.canAsk) {
     return new Response(JSON.stringify({
       error: 'quota_exceeded',
       message: `ניצלת את ${FREE_QUESTIONS_LIMIT} השאלות החינם. ניתן להירשם למנוי חודשי בעלות ${SUBSCRIPTION_PRICE_NIS} ₪.`,
@@ -126,8 +127,8 @@ export async function onRequestPost({ request, env }) {
   const data = await claudeRes.json();
   const answer = data.content?.[0]?.text || '';
 
-  // Increment usage only if user is on free tier (subscribers don't deplete)
-  if (!sub.hasActiveSubscription) {
+  // Increment usage only if user is on free tier (subscribers and admins don't deplete)
+  if (!sub.hasActiveSubscription && !adminUser) {
     await incrementQuestionsUsed(env, user.id);
   }
 
