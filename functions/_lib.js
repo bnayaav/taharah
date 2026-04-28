@@ -146,3 +146,59 @@ export async function getDataOwnerId(env, user) {
   }
   return { ownerId: user.id, isPartner: false, couple };
 }
+
+// =============== Subscriptions ===============
+export const FREE_QUESTIONS_LIMIT = 2;
+export const SUBSCRIPTION_PRICE_NIS = 10;
+
+export async function getSubscription(env, userId) {
+  let row = await env.DB.prepare(
+    'SELECT user_id, questions_used, subscription_until FROM subscriptions WHERE user_id = ?'
+  ).bind(userId).first();
+  if (!row) {
+    // Create row on first access
+    const now = Date.now();
+    await env.DB.prepare(
+      'INSERT INTO subscriptions (user_id, questions_used, subscription_until, updated_at) VALUES (?, 0, NULL, ?)'
+    ).bind(userId, now).run();
+    row = { user_id: userId, questions_used: 0, subscription_until: null };
+  }
+  const now = Date.now();
+  const hasActiveSubscription = row.subscription_until && row.subscription_until > now;
+  const freeRemaining = Math.max(0, FREE_QUESTIONS_LIMIT - row.questions_used);
+  return {
+    questionsUsed: row.questions_used,
+    subscriptionUntil: row.subscription_until,
+    hasActiveSubscription,
+    freeRemaining,
+    canAsk: hasActiveSubscription || freeRemaining > 0
+  };
+}
+
+export async function incrementQuestionsUsed(env, userId) {
+  await env.DB.prepare(
+    `UPDATE subscriptions SET questions_used = questions_used + 1, updated_at = ? WHERE user_id = ?`
+  ).bind(Date.now(), userId).run();
+}
+
+export async function activateSubscription(env, userId, monthsToAdd = 1) {
+  const now = Date.now();
+  const current = await env.DB.prepare(
+    'SELECT subscription_until FROM subscriptions WHERE user_id = ?'
+  ).bind(userId).first();
+  // Extend from current expiry if active, else from now
+  const baseTime = (current?.subscription_until && current.subscription_until > now) ? current.subscription_until : now;
+  const newUntil = baseTime + monthsToAdd * 30 * 24 * 60 * 60 * 1000;
+  await env.DB.prepare(
+    `INSERT INTO subscriptions (user_id, questions_used, subscription_until, updated_at) VALUES (?, 0, ?, ?)
+     ON CONFLICT(user_id) DO UPDATE SET subscription_until = ?, updated_at = ?`
+  ).bind(userId, newUntil, now, newUntil, now).run();
+  return newUntil;
+}
+
+// =============== Admin ===============
+export function isAdmin(user, env) {
+  if (!user || !user.email) return false;
+  const adminList = (env.ADMIN_EMAILS || '').split(',').map(e => e.trim().toLowerCase()).filter(Boolean);
+  return adminList.includes(user.email.toLowerCase());
+}

@@ -1,4 +1,4 @@
-import { jsonOk, getUserFromRequest, getCoupleForUser } from '../../_lib.js';
+import { jsonOk, getUserFromRequest, getCoupleForUser, getSubscription, isAdmin } from '../../_lib.js';
 
 export async function onRequestGet({ request, env }) {
   const user = await getUserFromRequest(request, env);
@@ -25,8 +25,12 @@ export async function onRequestGet({ request, env }) {
     }
   }
 
+  const subscription = await getSubscription(env, user.id);
+
   return jsonOk({
     user: { id: user.id, email: user.email, displayName: user.displayName },
-    couple: coupleInfo
+    couple: coupleInfo,
+    subscription,
+    isAdmin: isAdmin(user, env)
   });
 }
