@@ -81,6 +81,9 @@
   .cal-day.mikveh { background: linear-gradient(135deg, var(--rose-soft), var(--sage-soft)); border: 2px solid var(--sage); }
   .cal-day.mikveh .cal-day-num { color: var(--wine-deep); }
   .cal-day.today.niddah, .cal-day.today.clean, .cal-day.today.perisha, .cal-day.today.mikveh { background: linear-gradient(135deg, var(--wine), var(--wine-deep)); border: 0; }
+  .cal-day-check { position: absolute; top: 2px; left: 3px; width: 12px; height: 12px; background: var(--sage); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 700; line-height: 1; box-shadow: 0 1px 3px rgba(0,0,0,.15); animation: checkPop .35s cubic-bezier(.5, 1.6, .4, 1); }
+  .cal-day.confirmed-day { box-shadow: inset 0 0 0 1.5px var(--sage); }
+  .cal-day.today .cal-day-check { background: white; color: var(--sage); }
   .cal-legend { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px 10px; padding: 10px 4px 2px; border-top: 1px solid var(--line-soft); margin-top: 4px; }
   .legend-row { display: flex; align-items: center; gap: 5px; font-size: 11px; color: var(--ink-soft); font-weight: 500; white-space: nowrap; }
   .legend-dot { width: 11px; height: 11px; border-radius: 3px; flex-shrink: 0; }
@@ -185,9 +188,20 @@
   .modal-sub { color: var(--ink-muted); font-size: 14px; margin-bottom: 20px; }
 
   .checks-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; margin-bottom: 14px; }
-  .check-day { aspect-ratio: 1; border-radius: 10px; background: var(--bg-warm); border: 1px solid var(--line); display: flex; align-items: center; justify-content: center; font-family: var(--serif); font-size: 18px; font-weight: 600; color: var(--ink-soft); }
-  .check-day.done { background: var(--sage-soft); border-color: var(--sage); color: #4a5a3a; }
-  .check-day.today { border-color: var(--wine); background: var(--rose-soft); color: var(--wine-deep); }
+  .check-day { aspect-ratio: 1; border-radius: 12px; background: var(--bg-warm); border: 1.5px solid var(--line); display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: var(--serif); font-size: 18px; font-weight: 600; color: var(--ink-soft); position: relative; cursor: pointer; transition: transform .15s, background .2s, border-color .2s; user-select: none; padding: 4px; }
+  .check-day:active { transform: scale(.94); }
+  .check-day.hefsek { background: var(--rose-soft); border-color: var(--wine); color: var(--wine-deep); }
+  .check-day.future { opacity: .35; cursor: default; }
+  .check-day.future:active { transform: none; }
+  .check-day.today { border-color: var(--wine); background: var(--rose-soft); color: var(--wine-deep); border-width: 2.5px; box-shadow: 0 4px 14px rgba(122,46,58,.15); }
+  .check-day.confirmed { background: linear-gradient(135deg, var(--sage-soft) 0%, #d8e8d2 100%); border-color: var(--sage); color: #2d4a1f; }
+  .check-day.confirmed::after { content: '✓'; position: absolute; top: 4px; left: 6px; width: 16px; height: 16px; font-size: 12px; font-weight: 700; color: white; background: var(--sage); border-radius: 50%; display: flex; align-items: center; justify-content: center; line-height: 1; animation: checkPop .35s cubic-bezier(.5, 1.6, .4, 1); }
+  @keyframes checkPop { 0% { transform: scale(0); } 60% { transform: scale(1.2); } 100% { transform: scale(1); } }
+  .check-day-label { font-family: var(--sans); font-size: 9px; color: inherit; opacity: .7; font-weight: 500; margin-top: 2px; line-height: 1; }
+
+  .check-action { background: var(--surface); border: 1.5px solid var(--wine); color: var(--wine-deep); padding: 12px 18px; border-radius: 14px; font-family: var(--sans); font-size: 14px; font-weight: 600; cursor: pointer; transition: transform .1s, background .2s; display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; margin-top: 8px; }
+  .check-action:active { transform: scale(.97); background: var(--rose-soft); }
+  .check-action.done { background: var(--sage-soft); border-color: var(--sage); color: #2d4a1f; }
 
   .info-item { background: var(--surface); border: 1px solid var(--line-soft); border-radius: 14px; margin-bottom: 10px; overflow: hidden; }
   .info-q { padding: 14px 16px; font-weight: 600; color: var(--ink); font-size: 15px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; user-select: none; }
@@ -940,8 +954,44 @@ function renderHero() {
     }
   } else if (!last.mikvehDate) {
     const cleanDay = diffDays(parseYmd(last.hefsekDate), parseYmd(todayStr()));
-    if (cleanDay >= 1 && cleanDay <= 7) {
-      html += `<div class="card" style="margin-top: 18px"><div style="font-family: var(--serif); font-size: 17px; font-weight: 600; margin-bottom: 12px">שבעה נקיים</div><div class="checks-grid">${[1,2,3,4,5,6,7].map(d => `<div class="check-day ${d < cleanDay ? 'done' : ''} ${d === cleanDay ? 'today' : ''}">${gematriya(d)}</div>`).join('')}</div><div class="muted small text-center">היום ${gematriya(cleanDay)} מתוך ז׳</div></div>`;
+    const checks = last.cleanChecks || {};
+    if (cleanDay >= 0 && cleanDay <= 8) {
+      // Build cells: [hefsek] + 7 clean days
+      const cells = [];
+      cells.push({ type: 'hefsek', label: 'הפסק', confirmed: true, isToday: cleanDay === 0 });
+      for (let d = 1; d <= 7; d++) {
+        const isPast = d < cleanDay;
+        const isToday = d === cleanDay;
+        const isFuture = d > cleanDay;
+        const confirmed = !!checks[d];
+        cells.push({ type: 'clean', day: d, label: `יום ${gematriya(d)}`, confirmed, isToday, isFuture, isPast });
+      }
+      const cellsHtml = cells.map((c, idx) => {
+        const cls = ['check-day'];
+        if (c.type === 'hefsek') cls.push('hefsek');
+        if (c.confirmed) cls.push('confirmed');
+        if (c.isToday) cls.push('today');
+        if (c.isFuture) cls.push('future');
+        const onClick = (c.type === 'clean' && !c.isFuture) ? `onclick="window.toggleCleanCheck(${c.day})"` : '';
+        const display = c.type === 'hefsek' ? '<div style="font-family: var(--sans); font-size: 11px; font-weight: 700">הפסק</div>' : `<div>${gematriya(c.day)}</div>`;
+        return `<div class="${cls.join(' ')}" ${onClick}>${display}</div>`;
+      }).join('');
+
+      // Action button for today
+      let actionBtn = '';
+      if (cleanDay >= 1 && cleanDay <= 7) {
+        const todayConfirmed = !!checks[cleanDay];
+        if (todayConfirmed) {
+          actionBtn = `<div class="check-action done"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> בדיקה של היום אושרה</div>`;
+        } else {
+          actionBtn = `<button class="check-action" onclick="window.toggleCleanCheck(${cleanDay})"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> בדקתי - בדיקה תקינה</button>`;
+        }
+      }
+
+      const confirmedCount = Object.keys(checks).filter(k => checks[k]).length;
+      const headerSub = cleanDay === 0 ? 'התחילה ספירת שבעת הנקיים. לחצי "בדקתי" בכל יום כדי לסמן בדיקה תקינה.' : `יום ${gematriya(cleanDay)} מתוך ז׳ · ${confirmedCount} בדיקות אושרו`;
+
+      html += `<div class="card" style="margin-top: 18px"><div style="font-family: var(--serif); font-size: 17px; font-weight: 600; margin-bottom: 6px">שבעה נקיים</div><div class="muted small" style="margin-bottom: 14px">${headerSub}</div><div class="checks-grid" style="grid-template-columns: repeat(8, 1fr)">${cellsHtml}</div>${actionBtn}</div>`;
     }
     if (cleanDay >= 7) html += `<div class="card" style="margin-top: 14px"><div style="font-family: var(--serif); font-size: 17px; font-weight: 600; margin-bottom: 6px">סימון טבילה</div><div class="muted small" style="margin-bottom: 12px">סימני את ליל הטבילה לסיום מעקב המחזור.</div><button class="btn btn-primary btn-block" onclick="window.markMikveh()">סימון טבילה</button></div>`;
   }
@@ -974,15 +1024,21 @@ function buildDayEvents() {
         d = addDays(d, 1);
       }
       // Hefsek day itself
-      add(cycle.hefsekDate, 'niddah', 'הפסק טהרה');
+      add(cycle.hefsekDate, 'niddah', 'הפסק טהרה ✓');
       // 7 clean days
+      const checks = cycle.cleanChecks || {};
       for (let i = 1; i <= 7; i++) {
         const cleanDay = addDays(hefsek, i);
-        add(ymd(cleanDay), 'clean', `יום ${gematriya(i)} משבעת הנקיים`);
+        const confirmed = !!checks[i];
+        const label = confirmed ? `יום ${gematriya(i)} משבעת הנקיים ✓` : `יום ${gematriya(i)} משבעת הנקיים`;
+        add(ymd(cleanDay), 'clean', label);
+        if (confirmed) {
+          add(ymd(cleanDay), 'confirmed', null);
+        }
       }
       // Mikveh
       const mikvehDay = cycle.mikvehDate || ymd(addDays(hefsek, 8));
-      add(mikvehDay, 'mikveh', cycle.mikvehDate ? 'טבילה' : 'טבילה צפויה');
+      add(mikvehDay, 'mikveh', cycle.mikvehDate ? 'טבילה ✓' : 'טבילה צפויה');
     } else {
       // No hefsek yet - show 5 niddah + predicted hefsek/clean/mikveh
       const today = parseYmd(todayStr());
@@ -1068,11 +1124,15 @@ function renderCalendar() {
       else if (ev.types.has('niddah')) classes.push('niddah');
       else if (ev.types.has('perisha')) classes.push('perisha');
       else if (ev.types.has('clean')) classes.push('clean');
+      if (ev.types.has('confirmed')) classes.push('confirmed-day');
     }
+
+    const checkMark = (ev && ev.types.has('confirmed')) ? '<div class="cal-day-check">✓</div>' : '';
 
     html += `<div class="${classes.join(' ')}" data-date="${dateStr}" onclick="calSelectDay('${dateStr}')">
       <div class="cal-day-num">${day}</div>
       <div class="cal-day-heb">${hebDay}</div>
+      ${checkMark}
     </div>`;
   }
 
@@ -1471,6 +1531,32 @@ window.saveHefsek = async function() {
     closeModal('modal-hefsek');
     showToast('הפסק טהרה נשמר');
     renderHero(); renderCalendar();
+  } catch (e) { showToast(e.message); }
+};
+
+window.toggleCleanCheck = async function(dayNum) {
+  if (isPartner) return;
+  const last = getLastCycle();
+  if (!last || !last.hefsekDate) return;
+  const cleanDay = diffDays(parseYmd(last.hefsekDate), parseYmd(todayStr()));
+  // Don't allow checking future days
+  if (dayNum > cleanDay) return;
+
+  const checks = { ...(last.cleanChecks || {}) };
+  const wasConfirmed = !!checks[dayNum];
+  checks[dayNum] = !wasConfirmed;
+
+  try {
+    if (mode === 'cloud') {
+      await api('PATCH', `/api/cycles/${last.id}`, { cleanChecks: checks });
+    }
+    const cycle = data.cycles.find(c => c.id === last.id);
+    cycle.cleanChecks = checks;
+    saveLocal();
+    if (!wasConfirmed) showToast(`בדיקה ליום ${gematriya(dayNum)} אושרה ✓`);
+    else showToast('הבדיקה בוטלה');
+    renderHero();
+    renderCalendar();
   } catch (e) { showToast(e.message); }
 };
 
