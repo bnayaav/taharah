@@ -5,4 +5,4 @@ pages_build_output_dir = "public"
 [[d1_databases]]
 binding = "DB"
 database_name = "taharah-db"
-database_id = "2091e8c1-6fc9-465b-8a74-ad4d65cac7cc"
+database_id = "REPLACE_WITH_YOUR_D1_ID"
