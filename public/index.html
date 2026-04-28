@@ -1459,7 +1459,10 @@ window.showUpgradeScreen = async function() {
       contactHtml += `<a href="mailto:${info.adminEmail}?subject=${encodeURIComponent('אישור תשלום - מנוי טהרת המשפחה')}" class="btn btn-secondary btn-block" style="margin-top: 8px">שליחה באימייל</a>`;
     }
 
+    const pendingNotice = res.pending ? `<div class="card" style="margin-bottom: 14px; background: var(--gold-soft); border-color: var(--gold)"><div style="font-family: var(--serif); font-size: 17px; font-weight: 600; margin-bottom: 6px">בקשה קודמת ממתינה לאישור</div><div class="muted small">המנוי יופעל לאחר אימות התשלום. אם עדיין לא שילמת - תוכלי לעשות זאת עכשיו לפי האפשרויות למטה.</div></div>` : '';
+
     banner.innerHTML = `
+      ${pendingNotice}
       <div class="upgrade-screen">
         <div class="upgrade-header">
           <div class="upgrade-icon">📖</div>
@@ -1475,11 +1478,7 @@ window.showUpgradeScreen = async function() {
       </div>
     `;
   } catch (e) {
-    if (e.message && e.message.includes('כבר בקשה ממתינה')) {
-      banner.innerHTML = `<div class="card text-center"><div style="font-family: var(--serif); font-size: 18px; margin-bottom: 8px">בקשתך התקבלה</div><div class="muted small">המנוי יופעל לאחר אימות התשלום.<br>תוכלי לחזור לכאן כדי לבדוק.</div><button class="btn btn-ghost" style="margin-top: 14px" onclick="renderAskStatus()">חזרה</button></div>`;
-    } else {
-      banner.innerHTML = `<div class="card"><div class="muted small">שגיאה: ${e.message}</div><button class="btn btn-ghost btn-block" style="margin-top: 8px" onclick="renderAskStatus()">חזרה</button></div>`;
-    }
+    banner.innerHTML = `<div class="card"><div class="muted small">שגיאה: ${e.message}</div><button class="btn btn-ghost btn-block" style="margin-top: 8px" onclick="renderAskStatus()">חזרה</button></div>`;
   }
 };
 
