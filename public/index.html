@@ -1409,6 +1409,13 @@ function renderAskStatus() {
     return;
   }
 
+  // Admins have unlimited questions - no banner needed
+  if (isAdminUser) {
+    banner.innerHTML = '<div class="status-banner active"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> מצב אדמין · שאלות ללא הגבלה</div>';
+    card.style.display = 'block';
+    return;
+  }
+
   if (!subscription) { card.style.display = 'block'; banner.innerHTML = ''; return; }
 
   if (subscription.hasActiveSubscription) {
