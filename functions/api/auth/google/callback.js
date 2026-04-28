@@ -1,7 +1,9 @@
 import { jsonError, createSession, setSessionCookie, newId } from '../../../_lib.js';
 
 export async function onRequestGet({ request, env }) {
-  if (!env.GOOGLE_CLIENT_ID || !env.GOOGLE_CLIENT_SECRET) {
+  const clientId = (env.GOOGLE_CLIENT_ID || '').trim();
+  const clientSecret = (env.GOOGLE_CLIENT_SECRET || '').trim();
+  if (!clientId || !clientSecret) {
     return jsonError('Google login not configured', 503);
   }
 
@@ -23,8 +25,8 @@ export async function onRequestGet({ request, env }) {
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
     body: new URLSearchParams({
       code,
-      client_id: env.GOOGLE_CLIENT_ID,
-      client_secret: env.GOOGLE_CLIENT_SECRET,
+      client_id: clientId,
+      client_secret: clientSecret,
       redirect_uri: redirectUri,
       grant_type: 'authorization_code'
     })

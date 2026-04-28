@@ -1,7 +1,8 @@
 import { jsonError, randomToken } from '../../../_lib.js';
 
 export async function onRequestGet({ request, env }) {
-  if (!env.GOOGLE_CLIENT_ID) {
+  const clientId = (env.GOOGLE_CLIENT_ID || '').trim();
+  if (!clientId) {
     return jsonError('Google login not configured', 503);
   }
 
@@ -13,7 +14,7 @@ export async function onRequestGet({ request, env }) {
   const stateCookie = `taharah_oauth_state=${state}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=600`;
 
   const params = new URLSearchParams({
-    client_id: env.GOOGLE_CLIENT_ID,
+    client_id: clientId,
     redirect_uri: redirectUri,
     response_type: 'code',
     scope: 'openid email profile',
