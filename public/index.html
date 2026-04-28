@@ -1,0 +1,1593 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1" />
+<meta name="theme-color" content="#7a2e3a" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="default" />
+<meta name="apple-mobile-web-app-title" content="טהרת המשפחה" />
+<title>טהרת המשפחה</title>
+<link rel="manifest" href="/manifest.json" />
+<link rel="apple-touch-icon" href="/icon-192.png" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@400;500;700;900&family=Assistant:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #fbf6ee;
+    --bg-warm: #f5ecdf;
+    --surface: #ffffff;
+    --surface-tinted: #fdf8f0;
+    --ink: #2a1f1a;
+    --ink-soft: #5c4a42;
+    --ink-muted: #8a766c;
+    --line: #e8dccb;
+    --line-soft: #f0e6d6;
+    --wine: #7a2e3a;
+    --wine-deep: #5a1f29;
+    --rose: #c08a91;
+    --rose-soft: #f0d9dc;
+    --gold: #b8893a;
+    --gold-soft: #f5e8c8;
+    --sage: #7a8a6b;
+    --sage-soft: #e2e8d7;
+    --sky: #6b8a9a;
+    --sky-soft: #d8e3ea;
+    --shadow: 0 1px 2px rgba(60,40,30,.04), 0 4px 16px rgba(60,40,30,.06);
+    --shadow-lg: 0 8px 32px rgba(60,40,30,.10), 0 2px 8px rgba(60,40,30,.06);
+    --serif: 'Frank Ruhl Libre', serif;
+    --sans: 'Assistant', system-ui, sans-serif;
+  }
+
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body {
+    margin: 0; padding: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: 16px;
+    line-height: 1.55;
+    min-height: 100vh;
+    overscroll-behavior-y: contain;
+  }
+  body {
+    background-image:
+      radial-gradient(circle at 20% 10%, rgba(192,138,145,.08), transparent 40%),
+      radial-gradient(circle at 80% 90%, rgba(184,137,58,.06), transparent 50%);
+    background-attachment: fixed;
+    padding-bottom: 90px;
+  }
+
+  .topbar {
+    position: sticky; top: 0; z-index: 50;
+    background: rgba(251,246,238,.92);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--line-soft);
+    padding: env(safe-area-inset-top) 0 0 0;
+  }
+  .topbar-inner {
+    padding: 14px 20px 12px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .brand { display: flex; align-items: center; gap: 10px; }
+  .brand-icon {
+    width: 30px; height: 30px;
+    background: linear-gradient(135deg, var(--wine), var(--wine-deep));
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    color: #fbf6ee;
+    font-family: var(--serif);
+    font-weight: 700;
+    box-shadow: 0 2px 8px rgba(122,46,58,.25);
+  }
+  .brand-name {
+    font-family: var(--serif);
+    font-size: 19px; font-weight: 700;
+    color: var(--wine-deep);
+    letter-spacing: -.01em;
+  }
+  .icon-btn {
+    background: transparent; border: 0; cursor: pointer;
+    width: 38px; height: 38px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--ink-soft);
+    transition: background .2s;
+  }
+  .icon-btn:active { background: var(--line-soft); }
+
+  .container { padding: 0 20px; max-width: 560px; margin: 0 auto; }
+
+  .view { display: none; animation: fadeIn .25s ease; }
+  .view.active { display: block; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+  .hero {
+    margin-top: 20px;
+    background: linear-gradient(180deg, var(--surface) 0%, var(--surface-tinted) 100%);
+    border-radius: 24px;
+    padding: 24px 22px;
+    box-shadow: var(--shadow-lg);
+    border: 1px solid var(--line-soft);
+    position: relative; overflow: hidden;
+  }
+  .hero::before {
+    content: ''; position: absolute;
+    top: -40px; left: -40px;
+    width: 120px; height: 120px;
+    background: radial-gradient(circle, var(--rose-soft) 0%, transparent 70%);
+    opacity: .6; pointer-events: none;
+  }
+  .today-row {
+    display: flex; justify-content: space-between; align-items: baseline;
+    margin-bottom: 18px;
+    position: relative;
+  }
+  .today-greg { font-size: 13px; color: var(--ink-muted); font-weight: 500; letter-spacing: .02em; }
+  .today-heb { font-family: var(--serif); font-size: 17px; font-weight: 500; color: var(--ink-soft); }
+
+  .status-label {
+    font-size: 12px; color: var(--ink-muted);
+    text-transform: uppercase; letter-spacing: .15em;
+    font-weight: 600; margin-bottom: 6px;
+  }
+  .status-title {
+    font-family: var(--serif);
+    font-size: 30px; font-weight: 700;
+    line-height: 1.15; color: var(--ink);
+    margin: 0 0 8px 0; letter-spacing: -.02em;
+  }
+  .status-sub { color: var(--ink-soft); font-size: 15px; line-height: 1.5; }
+  .status-pill {
+    display: inline-block;
+    padding: 4px 12px; border-radius: 100px;
+    font-size: 12px; font-weight: 600;
+    margin-top: 12px; letter-spacing: .02em;
+  }
+  .pill-pure { background: var(--sage-soft); color: #4a5a3a; }
+  .pill-niddah { background: var(--rose-soft); color: var(--wine-deep); }
+  .pill-perisha { background: var(--gold-soft); color: #6b4f1f; }
+  .pill-clean { background: var(--sky-soft); color: #2a4a5a; }
+  .pill-mikveh { background: linear-gradient(135deg, var(--rose-soft), var(--gold-soft)); color: var(--wine-deep); }
+
+  .section-title {
+    font-family: var(--serif);
+    font-size: 18px; font-weight: 700;
+    color: var(--ink);
+    margin: 28px 0 14px 0;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .section-title::before { content: ''; width: 3px; height: 16px; background: var(--wine); border-radius: 2px; }
+
+  .pred-grid { display: grid; gap: 10px; }
+  .pred-card {
+    background: var(--surface);
+    border-radius: 16px;
+    padding: 14px 16px;
+    border: 1px solid var(--line-soft);
+    box-shadow: var(--shadow);
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 12px;
+  }
+  .pred-card.urgent { border-color: var(--gold); background: linear-gradient(135deg, var(--surface) 0%, var(--gold-soft) 200%); }
+  .pred-card.passed { opacity: .55; }
+  .pred-info { flex: 1; min-width: 0; }
+  .pred-name { font-weight: 600; font-size: 14px; color: var(--ink); margin-bottom: 2px; }
+  .pred-detail { font-size: 12px; color: var(--ink-muted); }
+  .pred-date { text-align: left; }
+  .pred-heb { font-family: var(--serif); font-size: 16px; font-weight: 500; color: var(--wine-deep); }
+  .pred-greg { font-size: 11px; color: var(--ink-muted); margin-top: 2px; }
+  .pred-days { font-size: 11px; color: var(--ink-muted); font-weight: 500; }
+
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    border: 0; cursor: pointer;
+    padding: 14px 22px;
+    border-radius: 14px;
+    font-family: var(--sans);
+    font-size: 15px; font-weight: 600;
+    transition: transform .1s, box-shadow .2s, background .2s;
+    text-decoration: none;
+  }
+  .btn:active { transform: scale(.97); }
+  .btn-primary {
+    background: linear-gradient(135deg, var(--wine), var(--wine-deep));
+    color: #fbf6ee;
+    box-shadow: 0 4px 16px rgba(122,46,58,.25);
+  }
+  .btn-secondary { background: var(--surface); color: var(--ink); border: 1px solid var(--line); }
+  .btn-ghost { background: transparent; color: var(--wine-deep); padding: 10px 14px; }
+  .btn-block { width: 100%; }
+  .btn-row { display: flex; gap: 10px; margin-top: 14px; }
+  .btn:disabled { opacity: .5; cursor: not-allowed; }
+
+  .field { margin-bottom: 16px; }
+  .label { display: block; font-size: 13px; font-weight: 600; color: var(--ink-soft); margin-bottom: 8px; }
+  .input, .select {
+    width: 100%; padding: 13px 14px;
+    border-radius: 12px;
+    border: 1px solid var(--line);
+    background: var(--surface);
+    color: var(--ink);
+    font-family: var(--sans); font-size: 15px;
+    transition: border .15s, box-shadow .15s;
+  }
+  .input:focus, .select:focus { outline: 0; border-color: var(--wine); box-shadow: 0 0 0 3px rgba(122,46,58,.10); }
+  .seg {
+    display: grid; grid-template-columns: 1fr 1fr;
+    background: var(--bg-warm);
+    border-radius: 12px; padding: 4px; gap: 4px;
+  }
+  .seg label {
+    cursor: pointer; text-align: center;
+    padding: 10px; border-radius: 9px;
+    font-size: 14px; font-weight: 600;
+    color: var(--ink-soft);
+    transition: background .2s, color .2s;
+  }
+  .seg input { display: none; }
+  .seg input:checked + label { background: var(--surface); color: var(--wine-deep); box-shadow: 0 1px 3px rgba(60,40,30,.08); }
+
+  .card {
+    background: var(--surface);
+    border-radius: 18px; padding: 20px;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--line-soft);
+    margin-bottom: 14px;
+  }
+  .empty { text-align: center; padding: 40px 20px; color: var(--ink-muted); }
+  .empty-icon {
+    width: 64px; height: 64px;
+    margin: 0 auto 14px;
+    background: var(--bg-warm);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--ink-muted);
+  }
+  .empty-title { font-family: var(--serif); font-size: 18px; font-weight: 600; color: var(--ink-soft); margin-bottom: 4px; }
+
+  .cycle-item {
+    background: var(--surface);
+    border: 1px solid var(--line-soft);
+    border-radius: 16px;
+    padding: 16px;
+    box-shadow: var(--shadow);
+    margin-bottom: 10px;
+  }
+  .cycle-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+  .cycle-heb { font-family: var(--serif); font-size: 17px; font-weight: 600; color: var(--ink); }
+  .cycle-greg { font-size: 12px; color: var(--ink-muted); }
+  .cycle-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
+  .tag {
+    font-size: 11px; padding: 3px 9px;
+    border-radius: 100px;
+    background: var(--bg-warm); color: var(--ink-soft);
+    font-weight: 500;
+  }
+  .tag-clean { background: var(--sky-soft); color: #2a4a5a; }
+  .tag-mikveh { background: var(--rose-soft); color: var(--wine-deep); }
+  .tag-onah { background: var(--gold-soft); color: #6b4f1f; }
+
+  .tabbar {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    background: rgba(251,246,238,.95);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-top: 1px solid var(--line-soft);
+    padding: 8px 0 calc(8px + env(safe-area-inset-bottom)) 0;
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    z-index: 40;
+  }
+  .tab {
+    background: transparent; border: 0; cursor: pointer;
+    padding: 8px 4px;
+    display: flex; flex-direction: column; align-items: center;
+    gap: 3px;
+    color: var(--ink-muted);
+    font-family: var(--sans);
+    font-size: 11px; font-weight: 500;
+    transition: color .15s;
+  }
+  .tab svg { width: 22px; height: 22px; }
+  .tab.active { color: var(--wine-deep); }
+  .tab.active .tab-dot { width: 4px; height: 4px; border-radius: 50%; background: var(--wine); margin-top: 1px; }
+  .tab-dot { height: 4px; }
+
+  .modal-backdrop {
+    position: fixed; inset: 0;
+    background: rgba(40,25,20,.55);
+    backdrop-filter: blur(4px);
+    z-index: 100;
+    display: none;
+    align-items: flex-end;
+    justify-content: center;
+    animation: fadeIn .2s;
+  }
+  .modal-backdrop.active { display: flex; }
+  .modal {
+    background: var(--bg);
+    width: 100%; max-width: 560px;
+    border-radius: 24px 24px 0 0;
+    padding: 24px 20px calc(24px + env(safe-area-inset-bottom)) 20px;
+    max-height: 90vh;
+    overflow-y: auto;
+    animation: slideUp .3s cubic-bezier(.2,.9,.3,1);
+  }
+  @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+  .modal-handle {
+    width: 40px; height: 4px;
+    background: var(--line);
+    border-radius: 4px;
+    margin: -10px auto 16px;
+  }
+  .modal-title { font-family: var(--serif); font-size: 22px; font-weight: 700; color: var(--ink); margin: 0 0 4px 0; }
+  .modal-sub { color: var(--ink-muted); font-size: 14px; margin-bottom: 20px; }
+
+  .checks-grid {
+    display: grid; grid-template-columns: repeat(7, 1fr);
+    gap: 6px; margin-bottom: 14px;
+  }
+  .check-day {
+    aspect-ratio: 1;
+    border-radius: 10px;
+    background: var(--bg-warm);
+    border: 1px solid var(--line);
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--serif);
+    font-size: 18px; font-weight: 600;
+    color: var(--ink-soft);
+    cursor: pointer;
+    transition: all .15s;
+  }
+  .check-day.done { background: var(--sage-soft); border-color: var(--sage); color: #4a5a3a; }
+  .check-day.today { border-color: var(--wine); background: var(--rose-soft); color: var(--wine-deep); }
+
+  .info-item {
+    background: var(--surface);
+    border: 1px solid var(--line-soft);
+    border-radius: 14px;
+    margin-bottom: 10px;
+    overflow: hidden;
+  }
+  .info-q {
+    padding: 14px 16px;
+    font-weight: 600;
+    color: var(--ink);
+    font-size: 15px;
+    cursor: pointer;
+    display: flex; justify-content: space-between; align-items: center;
+    user-select: none;
+  }
+  .info-q::after { content: '+'; font-size: 20px; color: var(--wine); font-weight: 400; transition: transform .2s; }
+  .info-item.open .info-q::after { transform: rotate(45deg); }
+  .info-a {
+    max-height: 0; overflow: hidden;
+    transition: max-height .3s, padding .3s;
+    color: var(--ink-soft);
+    font-size: 14px;
+    line-height: 1.65;
+    padding: 0 16px;
+  }
+  .info-item.open .info-a { max-height: 1000px; padding: 0 16px 14px 16px; }
+
+  .stain-item {
+    display: flex; gap: 12px; align-items: flex-start;
+    padding: 12px;
+    background: var(--surface);
+    border: 1px solid var(--line-soft);
+    border-radius: 14px;
+    margin-bottom: 8px;
+    box-shadow: var(--shadow);
+  }
+  .stain-dot { width: 12px; height: 12px; border-radius: 50%; margin-top: 4px; flex-shrink: 0; }
+  .stain-info { flex: 1; min-width: 0; }
+  .stain-meta { font-size: 12px; color: var(--ink-muted); margin-top: 2px; }
+  .stain-verdict {
+    margin-top: 6px; font-size: 13px;
+    padding: 4px 8px; border-radius: 6px;
+    display: inline-block; font-weight: 500;
+  }
+  .verdict-ok { background: var(--sage-soft); color: #4a5a3a; }
+  .verdict-ask { background: var(--gold-soft); color: #6b4f1f; }
+  .verdict-niddah { background: var(--rose-soft); color: var(--wine-deep); }
+
+  .toast {
+    position: fixed;
+    bottom: 100px; left: 50%;
+    transform: translate(-50%, 20px);
+    background: var(--ink); color: var(--bg);
+    padding: 12px 20px;
+    border-radius: 100px;
+    font-size: 14px; font-weight: 500;
+    box-shadow: var(--shadow-lg);
+    opacity: 0; pointer-events: none;
+    transition: all .3s;
+    z-index: 200;
+  }
+  .toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+  .text-center { text-align: center; }
+  .muted { color: var(--ink-muted); }
+  .small { font-size: 13px; }
+  hr { border: 0; border-top: 1px solid var(--line-soft); margin: 16px 0; }
+  .row { display: flex; gap: 10px; align-items: center; }
+  .grow { flex: 1; }
+
+  .blessing {
+    text-align: center;
+    margin: 30px 0 20px;
+    font-family: var(--serif);
+    color: var(--ink-muted);
+    font-size: 14px; font-style: italic;
+  }
+  .blessing::before, .blessing::after { content: '✦'; margin: 0 8px; color: var(--gold); }
+
+  .switch-row {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--line-soft);
+  }
+  .switch-row:last-child { border-bottom: 0; }
+  .switch-label { font-weight: 500; }
+  .switch-desc { font-size: 12px; color: var(--ink-muted); margin-top: 2px; }
+  .switch {
+    position: relative; width: 48px; height: 28px;
+    background: var(--line);
+    border-radius: 100px;
+    cursor: pointer;
+    transition: background .2s;
+  }
+  .switch::after {
+    content: ''; position: absolute;
+    top: 3px; right: 3px;
+    width: 22px; height: 22px;
+    background: white;
+    border-radius: 50%;
+    transition: transform .2s;
+    box-shadow: 0 2px 4px rgba(0,0,0,.15);
+  }
+  .switch.on { background: var(--wine); }
+  .switch.on::after { transform: translateX(-20px); }
+  .danger { color: #a04040; }
+
+  /* AI Stain Analysis */
+  .ai-banner {
+    background: linear-gradient(135deg, #f5e8c8 0%, #f0d9dc 100%);
+    border: 1px solid var(--gold);
+    border-radius: 16px;
+    padding: 14px 16px;
+    margin-bottom: 16px;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .ai-icon {
+    width: 40px; height: 40px;
+    background: white;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    box-shadow: 0 2px 8px rgba(184,137,58,.2);
+  }
+  .ai-title { font-family: var(--serif); font-weight: 700; color: var(--wine-deep); font-size: 16px; }
+  .ai-sub { font-size: 12px; color: var(--ink-soft); }
+
+  .upload-area {
+    border: 2px dashed var(--line);
+    border-radius: 14px;
+    padding: 24px 16px;
+    text-align: center;
+    background: var(--bg-warm);
+    cursor: pointer;
+    transition: border .2s, background .2s;
+  }
+  .upload-area:hover { border-color: var(--wine); background: var(--rose-soft); }
+  .upload-icon { color: var(--ink-muted); margin-bottom: 8px; }
+  .upload-title { font-weight: 600; color: var(--ink); margin-bottom: 4px; }
+  .upload-sub { font-size: 12px; color: var(--ink-muted); }
+
+  .image-preview {
+    position: relative;
+    border-radius: 14px;
+    overflow: hidden;
+    margin-bottom: 14px;
+    background: var(--ink);
+    aspect-ratio: 4/3;
+  }
+  .image-preview img { width: 100%; height: 100%; object-fit: contain; display: block; }
+  .image-remove {
+    position: absolute;
+    top: 8px; left: 8px;
+    width: 32px; height: 32px;
+    background: rgba(0,0,0,.6);
+    color: white;
+    border: 0; border-radius: 50%;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  .ai-loading {
+    background: linear-gradient(110deg, var(--bg-warm) 30%, var(--surface) 50%, var(--bg-warm) 70%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite linear;
+    border-radius: 14px;
+    padding: 20px;
+    text-align: center;
+  }
+  @keyframes shimmer { from { background-position: 200% 0; } to { background-position: -200% 0; } }
+
+  .analysis-result {
+    background: var(--surface);
+    border-radius: 18px;
+    padding: 20px;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--line-soft);
+    margin-bottom: 14px;
+  }
+  .analysis-header {
+    display: flex; align-items: center; gap: 10px;
+    margin-bottom: 14px; padding-bottom: 14px;
+    border-bottom: 1px solid var(--line-soft);
+  }
+  .concern-badge {
+    padding: 6px 14px;
+    border-radius: 100px;
+    font-size: 13px; font-weight: 600;
+    flex-shrink: 0;
+  }
+  .concern-low { background: var(--sage-soft); color: #4a5a3a; }
+  .concern-medium { background: var(--gold-soft); color: #6b4f1f; }
+  .concern-high { background: var(--rose-soft); color: var(--wine-deep); }
+  .analysis-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+  .analysis-cell {
+    background: var(--bg-warm);
+    border-radius: 10px;
+    padding: 10px 12px;
+  }
+  .analysis-key { font-size: 11px; color: var(--ink-muted); text-transform: uppercase; letter-spacing: .05em; margin-bottom: 2px; }
+  .analysis-val { font-weight: 600; color: var(--ink); font-size: 14px; }
+  .analysis-reason {
+    background: var(--bg-warm);
+    border-radius: 10px;
+    padding: 12px;
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--ink-soft);
+  }
+
+  /* Loading dots */
+  .loading-dots { display: inline-flex; gap: 4px; }
+  .loading-dots span {
+    width: 6px; height: 6px;
+    background: var(--wine);
+    border-radius: 50%;
+    animation: dot 1.4s ease-in-out infinite both;
+  }
+  .loading-dots span:nth-child(1) { animation-delay: -.32s; }
+  .loading-dots span:nth-child(2) { animation-delay: -.16s; }
+  @keyframes dot {
+    0%, 80%, 100% { transform: scale(.6); opacity: .5; }
+    40% { transform: scale(1); opacity: 1; }
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner container">
+    <div class="brand">
+      <div class="brand-icon">ט</div>
+      <div class="brand-name">טהרת המשפחה</div>
+    </div>
+    <button class="icon-btn" onclick="showView('settings')" aria-label="הגדרות">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+    </button>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- HOME -->
+  <div class="view active" id="view-home">
+    <div class="hero" id="hero"></div>
+    <div class="section-title">תאריכים צפויים למחזור הבא</div>
+    <div id="predicted" class="pred-grid"></div>
+    <div class="btn-row">
+      <button class="btn btn-primary btn-block" onclick="openAddCycleModal()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+        הוסיפי תחילת מחזור
+      </button>
+    </div>
+    <div id="active-cycle-section"></div>
+    <div class="blessing">תזכי לשנים רבות נעימות וטובות</div>
+  </div>
+
+  <!-- HISTORY -->
+  <div class="view" id="view-history">
+    <div class="section-title" style="margin-top: 22px">היסטוריית מחזורים</div>
+    <div id="history-list"></div>
+  </div>
+
+  <!-- STAINS -->
+  <div class="view" id="view-stains">
+    <div class="section-title" style="margin-top: 22px">בדיקת כתם</div>
+
+    <!-- AI Banner -->
+    <div class="ai-banner">
+      <div class="ai-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#7a2e3a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L13.09 8.26L20 9L13.09 9.74L12 16L10.91 9.74L4 9L10.91 8.26L12 2z"/><path d="M19 14l.5 2.5L22 17l-2.5.5L19 20l-.5-2.5L16 17l2.5-.5L19 14z"/><path d="M5 14l.5 2.5L8 17l-2.5.5L5 20l-.5-2.5L2 17l2.5-.5L5 14z"/></svg>
+      </div>
+      <div>
+        <div class="ai-title">זיהוי חכם בעזרת AI</div>
+        <div class="ai-sub">צילמי או העלי תמונה של הכתם וקבלי הכוונה ראשונית</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="muted small" style="margin-bottom:14px">
+        <strong>חשוב:</strong> זיהוי ראשוני בלבד. בכל ספק יש להתייעץ עם רב מורה הוראה.
+      </div>
+
+      <!-- Image Upload -->
+      <div class="field" id="image-upload-field">
+        <label class="label">תמונה (אופציונלי)</label>
+        <div id="image-preview-container"></div>
+        <div class="upload-area" id="upload-area" onclick="document.getElementById('stain-image').click()">
+          <div class="upload-icon">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+          </div>
+          <div class="upload-title">לחצי לצילום או העלאת תמונה</div>
+          <div class="upload-sub">JPG, PNG · עד 5MB</div>
+        </div>
+        <input type="file" id="stain-image" accept="image/*" capture="environment" style="display:none" onchange="handleImageSelect(event)" />
+        <div class="muted small" style="margin-top:8px; padding: 0 4px">
+          💡 טיפ: כדי לקבל הערכת גודל מדויקת, הניחי מטבע ליד הכתם
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="label">צבע הבד / הבגד שעליו הכתם</label>
+        <div class="seg">
+          <input type="radio" name="stainBg" id="bg-white" value="white" checked>
+          <label for="bg-white">לבן</label>
+          <input type="radio" name="stainBg" id="bg-color" value="color">
+          <label for="bg-color">צבעוני</label>
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="label">היכן נמצא הכתם</label>
+        <select class="select" id="stain-location">
+          <option value="garment">בגד</option>
+          <option value="white-cloth">בד בדיקה לבן</option>
+          <option value="floor">רצפה / כיסא / מקום שאינו מקבל טומאה</option>
+          <option value="body">על הגוף</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label class="label">הערות (אופציונלי)</label>
+        <input class="input" id="stain-notes" placeholder="פרטים נוספים..." />
+      </div>
+
+      <button class="btn btn-primary btn-block" id="analyze-btn" onclick="analyzeStain()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        ניתוח וזיהוי
+      </button>
+    </div>
+
+    <div id="stain-verdict-area"></div>
+
+    <div class="section-title">היסטוריית בדיקות</div>
+    <div id="stain-list"></div>
+  </div>
+
+  <!-- INFO -->
+  <div class="view" id="view-info">
+    <div class="section-title" style="margin-top: 22px">מדריך מהיר</div>
+    <div class="muted small" style="margin-bottom: 14px; padding: 0 4px">
+      תקצירים בסיסיים. בכל שאלה יש לפנות לרב מורה הוראה.
+    </div>
+
+    <div class="info-item" onclick="this.classList.toggle('open')">
+      <div class="info-q">וסת החודש</div>
+      <div class="info-a">ראיית הדם החוזרת באותו יום בחודש העברי. למשל אם ראתה ב-ט״ו בכסלו, יש לחשוש שתראה גם ב-ט״ו בטבת. צריך לפרוש בעונה (יום או לילה) המקבילה לזו שבה התחיל המחזור הקודם.</div>
+    </div>
+    <div class="info-item" onclick="this.classList.toggle('open')">
+      <div class="info-q">עונה בינונית (יום ה-30)</div>
+      <div class="info-a">חשש שמא תראה ביום ה-30 מתחילת המחזור הקודם. גם אם אין לאישה וסת קבוע, מונים 30 יום מתחילת הראייה הקודמת ובאותה עונה (יום או לילה) פורשים.</div>
+    </div>
+    <div class="info-item" onclick="this.classList.toggle('open')">
+      <div class="info-q">וסת ההפלגה</div>
+      <div class="info-a">מספר הימים שעברו בין ראיה אחת לשנייה. אם המרווח הוא קבוע (למשל תמיד 28 יום), יש לחשוש שגם בפעם הבאה יחזור אותו מרווח. בלי קביעות, חוששים להפלגה האחרונה לפחות.</div>
+    </div>
+    <div class="info-item" onclick="this.classList.toggle('open')">
+      <div class="info-q">הפסק טהרה</div>
+      <div class="info-a">בדיקה הנעשית אחרי שראתה לפחות חמישה ימים (ארבעה לפי חלק מהפוסקים), סמוך לשקיעה ביום החמישי. הבדיקה צריכה להיות נקייה לחלוטין, ומסמלת את סוף הראייה ותחילת ספירת שבעת הנקיים.</div>
+    </div>
+    <div class="info-item" onclick="this.classList.toggle('open')">
+      <div class="info-q">שבעה נקיים</div>
+      <div class="info-a">שבעת ימים מלאים מההפסק טהרה ואילך, שבכולם לא רואים שום סימן דם. מומלץ לבדוק כל יום בבוקר ובערב. גם בדיקה אחת בכל יום (מומלץ יום ראשון ויום שביעי לפחות) מועילה בדיעבד.</div>
+    </div>
+    <div class="info-item" onclick="this.classList.toggle('open')">
+      <div class="info-q">טבילה</div>
+      <div class="info-a">בליל היום השמיני (בלילה שאחרי היום השביעי), אחרי חפיפה וחציצה כדין, טובלת במקווה. בליל שבת או יום טוב הטבילה מוקדמת ויש לעיין בהוראות מיוחדות אצל הבלנית או הרב.</div>
+    </div>
+    <div class="info-item" onclick="this.classList.toggle('open')">
+      <div class="info-q">דיני כתמים בקצרה</div>
+      <div class="info-a">
+        כתם הקטן מגריס (≈19 מ״מ) על בד צבעוני - אינו טמא.<br>
+        כתם הגדול מגריס על בד לבן - מצריך שאלת רב.<br>
+        כתם על מקום שאינו מקבל טומאה (רצפה, ספסל וכד׳) - אינו טמא.<br>
+        כתם בגוון אדום, חום או שחור - חמור יותר. צהוב/ירוק/לבן - אינם מטמאים.
+      </div>
+    </div>
+    <div class="info-item" onclick="this.classList.toggle('open')">
+      <div class="info-q">פרישה - הכלל הבסיסי</div>
+      <div class="info-a">ביום הצפוי לראיה (וסת החודש / עונה בינונית / הפלגה) פורשים מתשמיש המיטה ב„עונה" שבה הראייה צפויה. עונת היום היא משעת הזריחה ועד השקיעה, ועונת הלילה משקיעה עד הזריחה. נהוג גם להחמיר ולפרוש בכל היום כולו.</div>
+    </div>
+
+    <hr style="margin: 24px 0">
+    <div class="muted small text-center" style="padding: 0 10px">
+      <strong>הצהרה</strong><br>
+      היישומון נועד לסייע במעקב בלבד.<br>
+      כל הוראת הלכה למעשה תיפסק אך ורק על ידי רב מורה הוראה.
+    </div>
+  </div>
+
+  <!-- SETTINGS -->
+  <div class="view" id="view-settings">
+    <div class="section-title" style="margin-top: 22px">הגדרות</div>
+    <div class="card">
+      <div class="switch-row">
+        <div>
+          <div class="switch-label">פרישה כל היום</div>
+          <div class="switch-desc">להחמיר ולפרוש בכל היום ולא רק בעונה</div>
+        </div>
+        <div class="switch" id="sw-fullday" onclick="toggleSetting('fullDay')"></div>
+      </div>
+      <div class="switch-row">
+        <div>
+          <div class="switch-label">תאריכים גם ביום שלפני</div>
+          <div class="switch-desc">להוסיף חשש גם ל„אור ל…" (היום שלפני)</div>
+        </div>
+        <div class="switch" id="sw-orle" onclick="toggleSetting('orLe')"></div>
+      </div>
+      <div class="switch-row">
+        <div>
+          <div class="switch-label">תזכורות פרישה</div>
+          <div class="switch-desc">התראה ביום שלפני וביום הפרישה עצמו</div>
+        </div>
+        <div class="switch" id="sw-notif" onclick="enableNotifications()"></div>
+      </div>
+    </div>
+
+    <div class="section-title">נתונים ופרטיות</div>
+    <div class="card">
+      <div class="muted small" style="margin-bottom: 14px">
+        כל המידע נשמר אך ורק במכשיר הזה (Local Storage). תמונות נשלחות לניתוח ל-AI ולא נשמרות בשום מקום.
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-secondary grow" onclick="exportData()">ייצוא לגיבוי</button>
+        <button class="btn btn-secondary grow" onclick="document.getElementById('import-file').click()">ייבוא</button>
+        <input type="file" id="import-file" accept=".json" style="display:none" onchange="importData(event)" />
+      </div>
+      <button class="btn btn-ghost btn-block danger" style="margin-top:12px" onclick="clearAllData()">מחיקת כל הנתונים</button>
+    </div>
+
+    <div class="muted small text-center" style="margin: 30px 0 10px">
+      גרסה 1.0 · נבנה בעברית עם הקפדה על פרטיות
+    </div>
+  </div>
+
+</div>
+
+<!-- Bottom Tab Bar -->
+<div class="tabbar">
+  <button class="tab active" data-view="home" onclick="showView('home')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+    בית
+    <div class="tab-dot"></div>
+  </button>
+  <button class="tab" data-view="history" onclick="showView('history')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+    היסטוריה
+    <div class="tab-dot"></div>
+  </button>
+  <button class="tab" data-view="stains" onclick="showView('stains')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg>
+    כתמים
+    <div class="tab-dot"></div>
+  </button>
+  <button class="tab" data-view="info" onclick="showView('info')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+    מדריך
+    <div class="tab-dot"></div>
+  </button>
+  <button class="tab" data-view="settings" onclick="showView('settings')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+    הגדרות
+    <div class="tab-dot"></div>
+  </button>
+</div>
+
+<!-- Modals -->
+<div class="modal-backdrop" id="modal-cycle">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <h2 class="modal-title">תחילת מחזור חדש</h2>
+    <div class="modal-sub">סמני את התאריך והעונה שבה ראית לראשונה</div>
+    <div class="field">
+      <label class="label">תאריך תחילת הראיה</label>
+      <input type="date" class="input" id="cycle-date" />
+    </div>
+    <div class="field">
+      <label class="label">עונה</label>
+      <div class="seg">
+        <input type="radio" name="cycle-onah" id="onah-day" value="day" checked>
+        <label for="onah-day">יום (זריחה - שקיעה)</label>
+        <input type="radio" name="cycle-onah" id="onah-night" value="night">
+        <label for="onah-night">לילה (שקיעה - זריחה)</label>
+      </div>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-secondary grow" onclick="closeModal('modal-cycle')">ביטול</button>
+      <button class="btn btn-primary grow" onclick="saveCycle()">שמירה</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="modal-hefsek">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <h2 class="modal-title">הפסק טהרה</h2>
+    <div class="modal-sub">סמני את התאריך שבו עשית הפסק טהרה. ספירת שבעת הנקיים תתחיל מהיום שלמחרת.</div>
+    <div class="field">
+      <label class="label">תאריך הפסק הטהרה</label>
+      <input type="date" class="input" id="hefsek-date" />
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-secondary grow" onclick="closeModal('modal-hefsek')">ביטול</button>
+      <button class="btn btn-primary grow" onclick="saveHefsek()">שמירה</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script type="module">
+import { HDate, gematriya } from 'https://esm.sh/@hebcal/core@5';
+
+// =========== State ===========
+const STORAGE_KEY = 'taharah-data-v1';
+const API_ENDPOINT = '/api/analyze';
+let state = loadState();
+let pendingImage = null;
+
+function loadState() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) return JSON.parse(raw);
+  } catch (e) {}
+  return {
+    cycles: [],
+    stains: [],
+    settings: { fullDay: false, orLe: false, notifications: false }
+  };
+}
+function saveState() { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
+
+// =========== Date helpers ===========
+function todayStr() {
+  const d = new Date();
+  return ymd(d);
+}
+function ymd(d) {
+  const y = d.getFullYear();
+  const m = String(d.getMonth()+1).padStart(2,'0');
+  const day = String(d.getDate()).padStart(2,'0');
+  return `${y}-${m}-${day}`;
+}
+function parseYmd(s) { const [y,m,d] = s.split('-').map(Number); return new Date(y, m-1, d); }
+function addDays(date, days) { const d = new Date(date); d.setDate(d.getDate()+days); return d; }
+function diffDays(a, b) {
+  const ms = (b instanceof Date ? b : parseYmd(b)) - (a instanceof Date ? a : parseYmd(a));
+  return Math.round(ms / (1000*60*60*24));
+}
+function gregToHeb(date) { return new HDate(date); }
+function fmtHeb(date) {
+  const hd = gregToHeb(date);
+  return `${gematriya(hd.getDate())} ב${hd.getMonthName('h')} ${gematriya(hd.getFullYear() % 1000)}`;
+}
+function fmtHebShort(date) {
+  const hd = gregToHeb(date);
+  return `${gematriya(hd.getDate())} ב${hd.getMonthName('h')}`;
+}
+function fmtGreg(date) {
+  const days = ['יום ראשון','יום שני','יום שלישי','יום רביעי','יום חמישי','יום שישי','שבת'];
+  const months = ['ינואר','פברואר','מרץ','אפריל','מאי','יוני','יולי','אוגוסט','ספטמבר','אוקטובר','נובמבר','דצמבר'];
+  return `${days[date.getDay()]}, ${date.getDate()} ב${months[date.getMonth()]} ${date.getFullYear()}`;
+}
+function fmtGregShort(date) { return `${date.getDate()}/${date.getMonth()+1}/${date.getFullYear()}`; }
+
+function addHebMonths(date, monthsToAdd) {
+  const hd = new HDate(date);
+  let m = hd.getMonth();
+  let y = hd.getFullYear();
+  const day = hd.getDate();
+  for (let i=0; i<monthsToAdd; i++) {
+    m++;
+    const monthsInYear = HDate.monthsInYear(y);
+    if (m > monthsInYear) { m = 1; y++; }
+  }
+  let targetDay = day;
+  const daysInMonth = HDate.daysInMonth(m, y);
+  if (targetDay > daysInMonth) targetDay = daysInMonth;
+  return new HDate(targetDay, m, y).greg();
+}
+
+// =========== Calculations ===========
+function getLastCycle() {
+  if (state.cycles.length === 0) return null;
+  return [...state.cycles].sort((a,b) => b.startDate.localeCompare(a.startDate))[0];
+}
+function getSortedCycles() { return [...state.cycles].sort((a,b) => a.startDate.localeCompare(b.startDate)); }
+
+function calcPredictions(lastCycle) {
+  if (!lastCycle) return [];
+  const startDate = parseYmd(lastCycle.startDate);
+  const onah = lastCycle.startOnah;
+  const onahLabel = onah === 'day' ? 'עונת יום' : 'עונת לילה';
+  const out = [];
+
+  out.push({
+    name: 'וסת החודש',
+    detail: `אותו יום עברי בחודש הבא · ${onahLabel}`,
+    date: addHebMonths(startDate, 1), onah
+  });
+
+  out.push({
+    name: 'עונה בינונית',
+    detail: `יום ה-30 מתחילת המחזור · ${onahLabel}`,
+    date: addDays(startDate, 29), onah
+  });
+
+  const sorted = getSortedCycles();
+  if (sorted.length >= 2) {
+    const prev = sorted[sorted.length - 2];
+    const interval = diffDays(prev.startDate, lastCycle.startDate);
+    if (interval > 0) {
+      out.push({
+        name: `וסת ההפלגה (${interval})`,
+        detail: `מרווח של ${interval} יום מהמחזור הקודם · ${onahLabel}`,
+        date: addDays(startDate, interval - 1), onah
+      });
+    }
+  }
+  return out;
+}
+
+function getCurrentStatus() {
+  const today = parseYmd(todayStr());
+  const last = getLastCycle();
+  if (!last) {
+    return {
+      label: 'התחלה', title: 'ברוכה הבאה',
+      sub: 'הוסיפי את תחילת המחזור הראשון כדי להתחיל לעקוב אחר תאריכים והלכות',
+      pill: null
+    };
+  }
+  const startDate = parseYmd(last.startDate);
+  const daysSinceStart = diffDays(startDate, today);
+
+  if (last.hefsekDate && !last.mikvehDate) {
+    const hefsek = parseYmd(last.hefsekDate);
+    const cleanDay = diffDays(hefsek, today);
+    if (cleanDay >= 1 && cleanDay <= 7) {
+      return {
+        label: 'שבעה נקיים', title: `יום ${cleanDay} מתוך 7`,
+        sub: 'מומלץ לבדוק בבוקר ובערב. ביום השביעי יש להקפיד על בדיקה.',
+        pill: { class: 'pill-clean', text: `ספירה · יום ${cleanDay}` }
+      };
+    }
+    if (cleanDay === 8) {
+      return {
+        label: 'טבילה', title: 'הלילה - טבילה',
+        sub: 'בליל היום השמיני, אחרי חפיפה וחציצה כדין, טובלים במקווה.',
+        pill: { class: 'pill-mikveh', text: 'ליל הטבילה' }
+      };
+    }
+    if (cleanDay > 8) {
+      return {
+        label: 'אחרי הספירה', title: 'יש לסמן את הטבילה',
+        sub: `עברו ${cleanDay - 7} ימים מסיום שבעת הנקיים. סמני את ליל הטבילה כדי לעדכן.`,
+        pill: { class: 'pill-clean', text: 'ממתין לאישור טבילה' }
+      };
+    }
+  }
+
+  if (!last.hefsekDate && daysSinceStart >= 0 && daysSinceStart < 5) {
+    return {
+      label: 'נידה', title: `יום ${daysSinceStart + 1} למחזור`,
+      sub: 'אחרי שיפסק הדם, ולפחות 5 ימים מתחילת המחזור, ניתן יהיה לעשות הפסק טהרה.',
+      pill: { class: 'pill-niddah', text: `יום ${daysSinceStart + 1}` }
+    };
+  }
+  if (!last.hefsekDate && daysSinceStart >= 5 && daysSinceStart < 10) {
+    return {
+      label: 'נידה', title: 'אפשר הפסק טהרה',
+      sub: 'אם הראיה פסקה, ניתן לעשות הפסק טהרה לפני השקיעה ולהתחיל את ספירת שבעת הנקיים.',
+      pill: { class: 'pill-niddah', text: 'מוכנה להפסק טהרה' }
+    };
+  }
+
+  const preds = calcPredictions(last);
+  for (const p of preds) {
+    if (ymd(p.date) === todayStr()) {
+      return {
+        label: p.name, title: 'יום פרישה היום',
+        sub: `${p.detail}. יש להימנע מתשמיש בעונה זו.`,
+        pill: { class: 'pill-perisha', text: 'פרישה' }
+      };
+    }
+    if (state.settings.orLe && ymd(addDays(p.date, -1)) === todayStr()) {
+      return {
+        label: 'אור ל…', title: 'אור לתאריך פרישה',
+        sub: `מחר חל ${p.name}. מחמירים גם בליל היום הקודם.`,
+        pill: { class: 'pill-perisha', text: 'אור ל…' }
+      };
+    }
+  }
+
+  return {
+    label: 'טהורה', title: 'טהרה',
+    sub: 'אין הגבלה כעת. עקבי אחר התאריכים הצפויים למטה.',
+    pill: { class: 'pill-pure', text: 'טהורה' }
+  };
+}
+
+// =========== Render ===========
+function renderHero() {
+  const today = new Date();
+  const status = getCurrentStatus();
+  const hero = document.getElementById('hero');
+  hero.innerHTML = `
+    <div class="today-row">
+      <div class="today-greg">${fmtGreg(today)}</div>
+      <div class="today-heb">${fmtHeb(today)}</div>
+    </div>
+    <div class="status-label">${status.label}</div>
+    <h1 class="status-title">${status.title}</h1>
+    <div class="status-sub">${status.sub}</div>
+    ${status.pill ? `<span class="status-pill ${status.pill.class}">${status.pill.text}</span>` : ''}
+  `;
+
+  const acs = document.getElementById('active-cycle-section');
+  const last = getLastCycle();
+  if (!last) { acs.innerHTML = ''; return; }
+
+  let html = '';
+  if (!last.hefsekDate) {
+    const daysSinceStart = diffDays(parseYmd(last.startDate), parseYmd(todayStr()));
+    if (daysSinceStart >= 4) {
+      html += `
+        <div class="card" style="margin-top: 18px">
+          <div style="font-family: var(--serif); font-size: 17px; font-weight: 600; margin-bottom: 6px">הפסק טהרה</div>
+          <div class="muted small" style="margin-bottom: 12px">אחרי שפסקה הראיה, יש לעשות הפסק טהרה סמוך לשקיעה.</div>
+          <button class="btn btn-primary btn-block" onclick="window.openHefsekModal()">סימון הפסק טהרה</button>
+        </div>
+      `;
+    }
+  } else if (!last.mikvehDate) {
+    const cleanDay = diffDays(parseYmd(last.hefsekDate), parseYmd(todayStr()));
+    if (cleanDay >= 1 && cleanDay <= 7) {
+      html += `
+        <div class="card" style="margin-top: 18px">
+          <div style="font-family: var(--serif); font-size: 17px; font-weight: 600; margin-bottom: 12px">שבעה נקיים</div>
+          <div class="checks-grid">
+            ${[1,2,3,4,5,6,7].map(d => `
+              <div class="check-day ${d < cleanDay ? 'done' : ''} ${d === cleanDay ? 'today' : ''}">${gematriya(d)}</div>
+            `).join('')}
+          </div>
+          <div class="muted small text-center">היום ${gematriya(cleanDay)} מתוך ז׳</div>
+        </div>
+      `;
+    }
+    if (cleanDay >= 7) {
+      html += `
+        <div class="card" style="margin-top: 14px">
+          <div style="font-family: var(--serif); font-size: 17px; font-weight: 600; margin-bottom: 6px">סימון טבילה</div>
+          <div class="muted small" style="margin-bottom: 12px">סימני את ליל הטבילה לסיום מעקב המחזור.</div>
+          <button class="btn btn-primary btn-block" onclick="window.markMikveh()">סימון טבילה</button>
+        </div>
+      `;
+    }
+  }
+  acs.innerHTML = html;
+}
+
+function renderPredictions() {
+  const last = getLastCycle();
+  const cont = document.getElementById('predicted');
+  if (!last) {
+    cont.innerHTML = '<div class="muted small text-center" style="padding: 14px">אחרי שתוסיפי מחזור ראשון יוצגו כאן התאריכים הצפויים.</div>';
+    return;
+  }
+  const preds = calcPredictions(last);
+  const today = parseYmd(todayStr());
+  cont.innerHTML = preds.map(p => {
+    const days = diffDays(today, p.date);
+    let dayLabel;
+    if (days === 0) dayLabel = 'היום';
+    else if (days === 1) dayLabel = 'מחר';
+    else if (days < 0) dayLabel = `לפני ${-days} ימים`;
+    else dayLabel = `בעוד ${days} ימים`;
+    const cls = days < 0 ? 'passed' : (days <= 1 && days >= 0 ? 'urgent' : '');
+    return `
+      <div class="pred-card ${cls}">
+        <div class="pred-info">
+          <div class="pred-name">${p.name}</div>
+          <div class="pred-detail">${p.detail}</div>
+          <div class="pred-days">${dayLabel}</div>
+        </div>
+        <div class="pred-date">
+          <div class="pred-heb">${fmtHebShort(p.date)}</div>
+          <div class="pred-greg">${fmtGregShort(p.date)}</div>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function renderHistory() {
+  const cont = document.getElementById('history-list');
+  if (state.cycles.length === 0) {
+    cont.innerHTML = `
+      <div class="empty">
+        <div class="empty-icon">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        </div>
+        <div class="empty-title">אין מחזורים שמורים</div>
+        <div class="small">הוסיפי מחזור ראשון מהדף הראשי</div>
+      </div>
+    `;
+    return;
+  }
+  const sorted = [...state.cycles].sort((a,b) => b.startDate.localeCompare(a.startDate));
+  cont.innerHTML = sorted.map((c,idx) => {
+    const startD = parseYmd(c.startDate);
+    const tags = [];
+    tags.push(`<span class="tag tag-onah">${c.startOnah === 'day' ? 'יום' : 'לילה'}</span>`);
+    if (c.hefsekDate) tags.push(`<span class="tag tag-clean">הפסק: ${fmtHebShort(parseYmd(c.hefsekDate))}</span>`);
+    if (c.mikvehDate) tags.push(`<span class="tag tag-mikveh">טבילה: ${fmtHebShort(parseYmd(c.mikvehDate))}</span>`);
+    let intervalText = '';
+    if (idx < sorted.length - 1) {
+      const interval = diffDays(sorted[idx+1].startDate, c.startDate);
+      intervalText = ` · הפלגה: ${interval} ימים`;
+    }
+    return `
+      <div class="cycle-item">
+        <div class="cycle-row">
+          <div class="cycle-heb">${fmtHeb(startD)}</div>
+          <button class="icon-btn" onclick="window.deleteCycle('${c.id}')" aria-label="מחיקה">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-2 14a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2L5 6"/></svg>
+          </button>
+        </div>
+        <div class="cycle-greg">${fmtGreg(startD)}${intervalText}</div>
+        <div class="cycle-tags">${tags.join('')}</div>
+      </div>
+    `;
+  }).join('');
+}
+
+function renderStains() {
+  const cont = document.getElementById('stain-list');
+  if (state.stains.length === 0) {
+    cont.innerHTML = `
+      <div class="empty">
+        <div class="empty-title">אין בדיקות שמורות</div>
+        <div class="small">בדיקות שתשמרי יופיעו כאן</div>
+      </div>
+    `;
+    return;
+  }
+  const sorted = [...state.stains].sort((a,b) => b.date.localeCompare(a.date));
+  cont.innerHTML = sorted.map(s => {
+    const concern = s.concernLevel || (s.verdict === 'ok' ? 'low' : s.verdict === 'niddah' ? 'high' : 'medium');
+    const verdictClass = concern === 'low' ? 'verdict-ok' : concern === 'high' ? 'verdict-niddah' : 'verdict-ask';
+    const dotColor = concern === 'low' ? '#7a8a6b' : concern === 'high' ? '#7a2e3a' : '#b8893a';
+    return `
+      <div class="stain-item">
+        <div class="stain-dot" style="background:${dotColor}"></div>
+        <div class="stain-info">
+          <div style="font-weight:600">${fmtHebShort(parseYmd(s.date))}</div>
+          <div class="stain-meta">${fmtGregShort(parseYmd(s.date))} · ${s.bg === 'white' ? 'לבן' : 'צבעוני'}${s.aiAnalyzed ? ' · 🤖 נותח ב-AI' : ''}</div>
+          <div class="stain-verdict ${verdictClass}">${s.verdictText}</div>
+          ${s.notes ? `<div class="stain-meta" style="margin-top:6px">${s.notes}</div>` : ''}
+        </div>
+        <button class="icon-btn" onclick="window.deleteStain('${s.id}')" aria-label="מחיקה">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-2 14a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2L5 6"/></svg>
+        </button>
+      </div>
+    `;
+  }).join('');
+}
+
+function renderSettings() {
+  document.getElementById('sw-fullday').classList.toggle('on', state.settings.fullDay);
+  document.getElementById('sw-orle').classList.toggle('on', state.settings.orLe);
+  document.getElementById('sw-notif').classList.toggle('on', state.settings.notifications);
+}
+
+// =========== UI ===========
+window.showView = function(name) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.getElementById('view-' + name)?.classList.add('active');
+  document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.view === name));
+  if (name === 'home') { renderHero(); renderPredictions(); }
+  if (name === 'history') renderHistory();
+  if (name === 'stains') renderStains();
+  if (name === 'settings') renderSettings();
+  window.scrollTo({top:0, behavior:'smooth'});
+};
+
+window.openAddCycleModal = function() {
+  document.getElementById('cycle-date').value = todayStr();
+  const hour = new Date().getHours();
+  document.getElementById(hour >= 6 && hour < 19 ? 'onah-day' : 'onah-night').checked = true;
+  document.getElementById('modal-cycle').classList.add('active');
+};
+window.openHefsekModal = function() {
+  document.getElementById('hefsek-date').value = todayStr();
+  document.getElementById('modal-hefsek').classList.add('active');
+};
+window.closeModal = function(id) { document.getElementById(id).classList.remove('active'); };
+
+window.saveCycle = function() {
+  const date = document.getElementById('cycle-date').value;
+  const onah = document.querySelector('input[name="cycle-onah"]:checked').value;
+  if (!date) { showToast('יש לבחור תאריך'); return; }
+  state.cycles.push({ id: 'c' + Date.now(), startDate: date, startOnah: onah, hefsekDate: null, mikvehDate: null });
+  saveState();
+  closeModal('modal-cycle');
+  showToast('המחזור נשמר');
+  renderHero(); renderPredictions();
+};
+
+window.saveHefsek = function() {
+  const date = document.getElementById('hefsek-date').value;
+  if (!date) { showToast('יש לבחור תאריך'); return; }
+  const last = getLastCycle();
+  if (!last) return;
+  const cycle = state.cycles.find(c => c.id === last.id);
+  cycle.hefsekDate = date;
+  saveState();
+  closeModal('modal-hefsek');
+  showToast('הפסק טהרה נשמר');
+  renderHero();
+};
+
+window.markMikveh = function() {
+  const last = getLastCycle();
+  if (!last) return;
+  const cycle = state.cycles.find(c => c.id === last.id);
+  cycle.mikvehDate = todayStr();
+  saveState();
+  showToast('סומנה הטבילה. שתעלה בשורות טובות.');
+  renderHero();
+};
+
+window.deleteCycle = function(id) {
+  if (!confirm('למחוק את המחזור?')) return;
+  state.cycles = state.cycles.filter(c => c.id !== id);
+  saveState();
+  renderHistory();
+};
+
+window.deleteStain = function(id) {
+  state.stains = state.stains.filter(s => s.id !== id);
+  saveState();
+  renderStains();
+};
+
+// =========== Image handling ===========
+window.handleImageSelect = async function(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  if (file.size > 5 * 1024 * 1024) {
+    showToast('הקובץ גדול מדי (מקסימום 5MB)');
+    return;
+  }
+
+  // Compress image to reduce upload size
+  const compressed = await compressImage(file);
+  pendingImage = compressed;
+
+  document.getElementById('image-preview-container').innerHTML = `
+    <div class="image-preview">
+      <img src="${compressed}" alt="תמונת הכתם" />
+      <button class="image-remove" onclick="window.clearImage()" aria-label="הסרה">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+  `;
+  document.getElementById('upload-area').style.display = 'none';
+};
+
+window.clearImage = function() {
+  pendingImage = null;
+  document.getElementById('image-preview-container').innerHTML = '';
+  document.getElementById('upload-area').style.display = 'block';
+  document.getElementById('stain-image').value = '';
+};
+
+async function compressImage(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        const maxDim = 1024;
+        let { width, height } = img;
+        if (width > maxDim || height > maxDim) {
+          if (width > height) { height = (height / width) * maxDim; width = maxDim; }
+          else { width = (width / height) * maxDim; height = maxDim; }
+        }
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, width, height);
+        resolve(canvas.toDataURL('image/jpeg', 0.85));
+      };
+      img.onerror = reject;
+      img.src = e.target.result;
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+// =========== AI Analysis ===========
+window.analyzeStain = async function() {
+  const bg = document.querySelector('input[name="stainBg"]:checked').value;
+  const location = document.getElementById('stain-location').value;
+  const notes = document.getElementById('stain-notes').value;
+  const btn = document.getElementById('analyze-btn');
+  const verdictArea = document.getElementById('stain-verdict-area');
+
+  btn.disabled = true;
+  verdictArea.innerHTML = `
+    <div class="ai-loading">
+      <div style="margin-bottom: 8px"><div class="loading-dots"><span></span><span></span><span></span></div></div>
+      <div style="font-weight: 600; color: var(--ink-soft)">${pendingImage ? 'מנתח תמונה...' : 'מעבד...'}</div>
+      <div class="muted small" style="margin-top:4px">${pendingImage ? 'AI בוחן את צבע הכתם, גודלו ומאפיינים נוספים' : 'מחשב הכוונה לפי הכללים הבסיסיים'}</div>
+    </div>
+  `;
+
+  try {
+    let result;
+    if (pendingImage) {
+      // Use AI analysis
+      const response = await fetch(API_ENDPOINT, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          image: pendingImage,
+          context: { background: bg, location, userNotes: notes }
+        })
+      });
+
+      if (!response.ok) {
+        const text = await response.text();
+        throw new Error(`AI analysis failed: ${response.status} ${text}`);
+      }
+      result = await response.json();
+      result.aiAnalyzed = true;
+    } else {
+      // Rule-based fallback
+      result = ruleBasedAnalysis(bg, location);
+    }
+
+    // Save to history
+    const stain = {
+      id: 's' + Date.now(),
+      date: todayStr(),
+      bg, location, notes,
+      verdict: result.concernLevel === 'low' ? 'ok' : result.concernLevel === 'high' ? 'niddah' : 'ask',
+      verdictText: result.recommendation || result.verdictText,
+      concernLevel: result.concernLevel,
+      aiAnalyzed: result.aiAnalyzed || false,
+      analysis: result
+    };
+    state.stains.push(stain);
+    saveState();
+
+    // Render result
+    renderAnalysisResult(result);
+    showToast('הבדיקה נשמרה');
+    document.getElementById('stain-notes').value = '';
+    window.clearImage();
+    renderStains();
+  } catch (err) {
+    console.error(err);
+    verdictArea.innerHTML = `
+      <div class="card" style="border-color: var(--rose); margin-top: 14px">
+        <div style="font-weight: 600; color: var(--wine-deep); margin-bottom: 6px">שגיאה בניתוח</div>
+        <div class="muted small">${err.message}. אם הבעיה נמשכת, נסי ללא תמונה כדי לקבל הכוונה לפי הכללים הבסיסיים.</div>
+      </div>
+    `;
+  } finally {
+    btn.disabled = false;
+  }
+};
+
+function renderAnalysisResult(result) {
+  const concernText = {
+    low: 'חשש נמוך', medium: 'חשש בינוני - יש לשאול רב', high: 'חשש גבוה - חובה לשאול רב'
+  };
+  const concernCls = `concern-${result.concernLevel || 'medium'}`;
+
+  let html = `
+    <div class="analysis-result">
+      <div class="analysis-header">
+        <div style="font-family: var(--serif); font-size: 18px; font-weight: 700; flex: 1">תוצאת ניתוח${result.aiAnalyzed ? ' AI' : ''}</div>
+        <div class="concern-badge ${concernCls}">${concernText[result.concernLevel || 'medium']}</div>
+      </div>
+  `;
+
+  if (result.aiAnalyzed && result.observations) {
+    html += `
+      <div class="analysis-grid">
+        <div class="analysis-cell">
+          <div class="analysis-key">צבע נראה</div>
+          <div class="analysis-val">${result.observations.colorDescription || '—'}</div>
+        </div>
+        <div class="analysis-cell">
+          <div class="analysis-key">הערכת גודל</div>
+          <div class="analysis-val">${result.observations.sizeDescription || '—'}</div>
+        </div>
+        <div class="analysis-cell" style="grid-column: span 2">
+          <div class="analysis-key">רקע</div>
+          <div class="analysis-val">${result.observations.backgroundDescription || '—'}</div>
+        </div>
+      </div>
+    `;
+  }
+
+  html += `
+      <div class="analysis-reason">
+        <strong style="display:block; margin-bottom:6px; color: var(--ink)">הכוונה:</strong>
+        ${result.recommendation || result.verdictText || ''}
+      </div>
+      <div class="muted small" style="margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--line-soft)">
+        <strong>חשוב:</strong> זוהי הכוונה ראשונית בלבד מבוססת על ניתוח ויזואלי וכללי הלכה בסיסיים. בכל מקרה של ספק או חשש יש לפנות לרב מורה הוראה לקבלת פסק.
+      </div>
+    </div>
+  `;
+
+  document.getElementById('stain-verdict-area').innerHTML = html;
+}
+
+function ruleBasedAnalysis(bg, location) {
+  if (location === 'floor') {
+    return {
+      concernLevel: 'low',
+      recommendation: 'מקום שאינו מקבל טומאה - לרוב אינו מטמא. בכל ספק שאלי רב.'
+    };
+  }
+  if (location === 'body') {
+    return {
+      concernLevel: 'medium',
+      recommendation: 'כתם על הגוף - יש להראות לרב.'
+    };
+  }
+  if (location === 'white-cloth') {
+    return {
+      concernLevel: 'high',
+      recommendation: 'בד בדיקה לבן - בדיקה זו מצריכה התייעצות עם רב.'
+    };
+  }
+  if (bg === 'color') {
+    return {
+      concernLevel: 'low',
+      recommendation: 'כתם על בד צבעוני - בלי תמונה לא ניתן להעריך גודל. אם הוא קטן מגריס (כ-19 מ"מ) לרוב אינו מטמא.'
+    };
+  }
+  return {
+    concernLevel: 'medium',
+    recommendation: 'כתם על בגד לבן - יש להעריך את הגודל. אם גדול מגריס (כ-19 מ"מ), חובה להתייעץ עם רב.'
+  };
+}
+
+// =========== Settings actions ===========
+window.toggleSetting = function(key) {
+  state.settings[key] = !state.settings[key];
+  saveState();
+  renderSettings();
+  if (state.cycles.length > 0) renderHero();
+};
+
+window.enableNotifications = async function() {
+  if (state.settings.notifications) {
+    state.settings.notifications = false;
+    saveState(); renderSettings();
+    return;
+  }
+  if (!('Notification' in window)) { showToast('הדפדפן לא תומך בהתראות'); return; }
+  const perm = await Notification.requestPermission();
+  if (perm === 'granted') {
+    state.settings.notifications = true;
+    saveState(); renderSettings();
+    showToast('התראות הופעלו');
+  } else { showToast('ההתראות לא אושרו'); }
+};
+
+window.exportData = function() {
+  const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = `taharah-backup-${todayStr()}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast('הקובץ ירד');
+};
+
+window.importData = function(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    try {
+      const data = JSON.parse(e.target.result);
+      if (data.cycles && data.stains && data.settings) {
+        if (!confirm('פעולה זו תחליף את כל הנתונים הקיימים. להמשיך?')) return;
+        state = data;
+        saveState();
+        showToast('הייבוא הצליח');
+        renderHero(); renderPredictions(); renderHistory(); renderStains(); renderSettings();
+      } else { showToast('הקובץ לא תקין'); }
+    } catch (err) { showToast('שגיאה בייבוא'); }
+  };
+  reader.readAsText(file);
+};
+
+window.clearAllData = function() {
+  if (!confirm('פעולה זו תמחק את כל המחזורים, הכתמים וההגדרות. אין דרך לשחזר.')) return;
+  if (!confirm('האם את בטוחה לחלוטין?')) return;
+  localStorage.removeItem(STORAGE_KEY);
+  state = loadState();
+  showToast('כל הנתונים נמחקו');
+  renderHero(); renderPredictions(); renderHistory(); renderStains(); renderSettings();
+};
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+document.querySelectorAll('.modal-backdrop').forEach(el => {
+  el.addEventListener('click', (e) => { if (e.target === el) el.classList.remove('active'); });
+});
+
+// =========== Initial Render ===========
+renderHero();
+renderPredictions();
+
+// PWA
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js').catch(err => console.log('SW failed', err));
+  });
+}
+</script>
+</body>
+</html>
