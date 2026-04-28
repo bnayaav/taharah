@@ -319,7 +319,7 @@
       </button>
     </div>
     <div id="active-cycle-section"></div>
-    <div class="blessing">תזכי לשנים רבות נעימות וטובות</div>
+    <div class="blessing" id="home-blessing">תזכי לשנים רבות נעימות וטובות</div>
   </div>
 
   <!-- HISTORY -->
@@ -446,8 +446,8 @@
 <div class="modal-backdrop" id="modal-join">
   <div class="modal">
     <div class="modal-handle"></div>
-    <h2 class="modal-title">הצטרפות לבן זוג</h2>
-    <div class="modal-sub">הזיני את קוד 6 הספרות שקיבלת</div>
+    <h2 class="modal-title">הצטרפות לבת זוג</h2>
+    <div class="modal-sub">הזן את קוד 6 הספרות שקיבלת</div>
     <div class="field"><input class="input" id="join-code" inputmode="numeric" pattern="[0-9]*" maxlength="6" style="font-size: 24px; text-align: center; letter-spacing: .15em" /></div>
     <div class="btn-row">
       <button class="btn btn-secondary grow" onclick="closeModal('modal-join')">ביטול</button>
@@ -696,8 +696,9 @@ function getCurrentStatus() {
   const today = parseYmd(todayStr());
   const last = getLastCycle();
   if (!last) {
-    return { label: 'התחלה', title: isPartner ? 'אין מחזורים' : 'ברוכה הבאה',
-      sub: isPartner ? 'בעלת המעקב טרם הוסיפה מחזורים' : 'הוסיפי את תחילת המחזור הראשון כדי להתחיל לעקוב',
+    return { label: 'התחלה',
+      title: isPartner ? 'אין מחזורים' : 'ברוכה הבאה',
+      sub: isPartner ? 'אשתך טרם הוסיפה מחזורים' : 'הוסיפי את תחילת המחזור הראשון כדי להתחיל לעקוב',
       pill: null };
   }
   const startDate = parseYmd(last.startDate);
@@ -734,6 +735,10 @@ function renderHero() {
     <div class="status-sub">${status.sub}</div>
     ${status.pill ? `<span class="status-pill ${status.pill.class}">${status.pill.text}</span>` : ''}
   `;
+
+  // Update blessing text based on user gender
+  const blessing = document.getElementById('home-blessing');
+  if (blessing) blessing.textContent = isPartner ? 'תזכה לשנים רבות נעימות וטובות' : 'תזכי לשנים רבות נעימות וטובות';
 
   // Hide add-cycle button for partners
   document.getElementById('add-cycle-row').style.display = isPartner ? 'none' : 'flex';
@@ -795,7 +800,7 @@ function renderStainForm() {
   const cont = document.getElementById('stain-form-area');
   if (isPartner) {
     if (data.stainsNotShared) {
-      cont.innerHTML = `<div class="card text-center"><div style="font-family: var(--serif); font-size: 18px; font-weight: 600; margin-bottom: 8px">בדיקות פרטיות</div><div class="muted small">בעלת המעקב לא שיתפה את בדיקות הכתמים שלה.</div></div>`;
+      cont.innerHTML = `<div class="card text-center"><div style="font-family: var(--serif); font-size: 18px; font-weight: 600; margin-bottom: 8px">בדיקות פרטיות</div><div class="muted small">אשתך לא שיתפה את בדיקות הכתמים שלה.</div></div>`;
     } else {
       cont.innerHTML = '';
     }
@@ -874,7 +879,7 @@ function renderSettings() {
             <div style="font-weight: 600; margin-bottom: 4px">${name}</div>
             <div class="muted small" style="overflow: hidden; text-overflow: ellipsis">${user.email}</div>
           </div>
-          <button class="btn btn-secondary" style="padding: 8px 14px; font-size: 13px" onclick="editName()">שנה שם</button>
+          <button class="btn btn-secondary" style="padding: 8px 14px; font-size: 13px" onclick="editName()">עריכת שם</button>
         </div>
       </div>
     `;
@@ -900,7 +905,7 @@ function renderSettings() {
             <div class="couple-avatar">${(couple.partnerName || couple.partnerEmail || '?')[0].toUpperCase()}</div>
             <div class="grow">
               <div style="font-weight: 600">${couple.partnerName || couple.partnerEmail || 'בן זוג'}</div>
-              <div class="muted small">${isTracker ? 'בעלך רואה את התאריכים שלך' : 'את רואה את הנתונים של אשתך'}</div>
+              <div class="muted small">${isTracker ? 'בעלך רואה את התאריכים שלך' : 'אתה רואה את הנתונים של אשתך'}</div>
             </div>
           </div>
         </div>
@@ -1235,7 +1240,7 @@ window.unlinkCouple = async function() {
 // =========== Account ===========
 window.editName = async function() {
   const current = user?.displayName || '';
-  const name = prompt('הזיני את השם שיוצג בכותרת:', current);
+  const name = prompt('השם שיוצג בכותרת:', current);
   if (name === null) return;
   try {
     const res = await api('PATCH', '/api/auth/profile', { displayName: name });
